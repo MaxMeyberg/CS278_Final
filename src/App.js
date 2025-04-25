@@ -6,15 +6,18 @@ import {
   startGame,
   submitDonations,
   processDonations,
-  testAddPlayer
+  testAddPlayer,
+  testFirebaseConnection,
+  improvedTestAddPlayer
 } from './firebase';
-import { ref, set, getDatabase } from 'firebase/database';
+import { ref, set, get, getDatabase } from 'firebase/database';
 import './App.css';
 
 function App() {
   // Game state
   const [playerName, setPlayerName] = useState('');
-  const [gameId, setGameId] = useState('');
+  const [gameIdInput, setGameIdInput] = useState('');
+  const [joinedGameId, setJoinedGameId] = useState('');
   const [gameData, setGameData] = useState(null);
   const [gameState, setGameState] = useState('setup'); // setup, lobby, playing, gameover
   const [error, setError] = useState(null);
@@ -24,13 +27,13 @@ function App() {
 
   // Listen for game updates
   useEffect(() => {
-    if (!gameId) return;
+    if (!joinedGameId) return;
     
-    const normalizedGameId = gameId.trim().toUpperCase();
+    console.log(`Setting up listener for joined game: ${joinedGameId}`);
     
     let previousPlayerCount = 0;
     
-    const unsubscribe = listenToGame(normalizedGameId, (data) => {
+    const unsubscribe = listenToGame(joinedGameId, (data) => {
       if (!data) {
         setError("Game not found");
         return;
@@ -58,7 +61,7 @@ function App() {
     });
     
     return () => unsubscribe();
-  }, [gameId]);
+  }, [joinedGameId]);
   
   // Initialize donations when entering game
   useEffect(() => {
@@ -96,7 +99,7 @@ function App() {
       
       const success = await createGame(newGameId, playerName);
       if (success) {
-        setGameId(newGameId);
+        setJoinedGameId(newGameId);
       } else {
         setError("Failed to create game");
       }
@@ -109,43 +112,51 @@ function App() {
   
   // Join an existing game
   const handleJoinGame = async () => {
+    console.log("🔴🔴🔴 handleJoinGame called");
+    console.log("🔴 Type of joinGame:", typeof joinGame);
+    console.log("🔴 Current state:", { playerName, gameIdInput });
+    
     if (!playerName.trim()) {
+      console.log("❌ DEBUG: Join aborted - empty player name");
       setError("Please enter your name");
       return;
     }
     
-    if (!gameId.trim()) {
+    if (!gameIdInput.trim()) {
       setError("Please enter a game code");
       return;
     }
     
     setLoading(true);
     setError(null);
+    console.log("🔍 DEBUG: Join attempt starting - calling joinGame function");
     
     try {
-      const normalizedGameId = gameId.trim().toUpperCase();
+      const normalizedGameId = gameIdInput.trim().toUpperCase();
+      console.log(`🔍 DEBUG: Normalized game ID: ${normalizedGameId}`);
       
+      // Add this line to check if the function is being imported correctly
+      console.log("🔍 DEBUG: joinGame function exists:", typeof joinGame === 'function');
+      
+      // This line should be calling the Firebase joinGame function
+      console.log("🔴 About to call Firebase joinGame function");
       const result = await joinGame(normalizedGameId, playerName);
+      console.log("🔴 Firebase joinGame returned:", result);
+      
       if (result.success) {
-        // Force a local update of player data 
-        const localPlayerKey = `player_${playerName}`;
-        const localPlayerData = {
-          name: playerName,
-          money: 100,
-          isHost: false,
-          ready: false
-        };
-        
-        // Set the normalized ID
-        setGameId(normalizedGameId);
+        console.log(`🔍 DEBUG: Join successful, setting joinedGameId`);
+        // Only set the joined game ID AFTER successfully joining
+        setJoinedGameId(normalizedGameId);
       } else {
+        console.log(`🔍 DEBUG: Join failed with message: ${result.message}`);
         setError(result.message || "Failed to join game");
       }
     } catch (error) {
-      console.error("Error joining game:", error);
+      console.error("🔍 DEBUG: Exception in handleJoinGame:", error);
       setError(error.message);
     } finally {
       setLoading(false);
+      console.log("🔍 DEBUG: handleJoinGame completed");
     }
   };
   
@@ -160,7 +171,7 @@ function App() {
     setError(null);
     
     try {
-      await startGame(gameId);
+      await startGame(joinedGameId);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -207,7 +218,7 @@ function App() {
     setError(null);
     
     try {
-      await submitDonations(gameId, playerName, currentDonations, gameData.day);
+      await submitDonations(joinedGameId, playerName, currentDonations, gameData.day);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -221,7 +232,7 @@ function App() {
     setError(null);
     
     try {
-      await processDonations(gameId);
+      await processDonations(joinedGameId);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -231,7 +242,7 @@ function App() {
   
   // Clean up the addTestPlayer function
   const addTestPlayer = async () => {
-    if (!gameId) {
+    if (!joinedGameId) {
       setError("No game ID available");
       return;
     }
@@ -244,9 +255,9 @@ function App() {
       // Use a prefixed key
       const playerKey = `player_${testName}`;
       
-      console.log(`Directly adding test player ${testName} to game ${gameId}`);
+      console.log(`Directly adding test player ${testName} to game ${joinedGameId}`);
       
-      await set(ref(db, `games/${gameId}/players/${playerKey}`), {
+      await set(ref(db, `games/${joinedGameId}/players/${playerKey}`), {
         name: testName,
         money: 100,
         isHost: false,
@@ -263,20 +274,27 @@ function App() {
     }
   };
   
-  // Fix the debugDatabase function
+  // Update your debugDatabase function
   const debugDatabase = async () => {
     try {
-      // Remove these imports and use the already imported functions
-      // const { getDatabase, ref, get } = require('firebase/database');
+      console.log("🔍 DEBUG DATABASE: Starting database debug...");
       const db = getDatabase();
       
       // Check if the game exists
-      const gameRef = ref(db, `games/${gameId}`);
+      const gameRef = ref(db, `games/${joinedGameId}`);
       const snapshot = await get(gameRef);
       
       if (snapshot.exists()) {
         console.log("✅ GAME EXISTS:", snapshot.val());
         console.log("Players:", snapshot.val().players || "No players");
+        
+        // Check players specifically
+        if (snapshot.val().players) {
+          console.log("Player count:", Object.keys(snapshot.val().players).length);
+          console.log("Player details:", snapshot.val().players);
+        } else {
+          console.log("❌ No players found in the game");
+        }
       } else {
         console.log("❌ GAME NOT FOUND");
         
@@ -287,6 +305,36 @@ function App() {
       }
     } catch (error) {
       console.error("Debug error:", error);
+    }
+  };
+  
+  // Add this function
+  const testJoinProcess = async () => {
+    try {
+      console.log("🧪 TESTING JOIN PROCESS");
+      if (!joinedGameId) {
+        console.error("❌ No game ID to test with");
+        return;
+      }
+      
+      const testPlayerName = "TestJoin" + Math.floor(Math.random() * 1000);
+      console.log(`🧪 Testing join with player: ${testPlayerName}`);
+      
+      // First test with testAddPlayer to see if direct database writes work
+      console.log("Step 1: Testing direct database write");
+      const directAddSuccess = await testAddPlayer(joinedGameId, testPlayerName);
+      console.log(`Direct add ${directAddSuccess ? 'succeeded' : 'failed'}`);
+      
+      // Then test with joinGame to check if the normal flow works
+      console.log("Step 2: Testing normal join flow");
+      const joinResult = await joinGame(joinedGameId, "JoinTest" + Math.floor(Math.random() * 1000));
+      console.log("Join result:", joinResult);
+      
+      // Check the database to confirm
+      console.log("Step 3: Verifying database state");
+      await debugDatabase();
+    } catch (error) {
+      console.error("Test join process error:", error);
     }
   };
   
@@ -330,6 +378,16 @@ function App() {
             >
               Join Existing Game
             </button>
+            
+            <button 
+              onClick={async () => {
+                console.log("🧪 Testing Firebase connection and permissions...");
+                await testFirebaseConnection();
+              }}
+              style={{ marginTop: '10px', backgroundColor: '#9c27b0', color: 'white' }}
+            >
+              Test Firebase Connection
+            </button>
           </div>
         ) : (
           // Join mode screen
@@ -351,8 +409,8 @@ function App() {
               <label>Game Code</label>
               <input
                 type="text"
-                value={gameId}
-                onChange={(e) => setGameId(e.target.value)}
+                value={gameIdInput}
+                onChange={(e) => setGameIdInput(e.target.value)}
                 placeholder="Enter game code"
               />
             </div>
@@ -367,13 +425,28 @@ function App() {
               
               <button 
                 onClick={() => {
-                  console.log("Join game confirmed for player:", playerName, "to game:", gameId);
+                  console.log("🔴 BUTTON CLICKED: Join Game button was clicked!");
+                  console.log("🔴 Current state:", { playerName, gameIdInput });
+                  console.log("🔴 Calling handleJoinGame...");
                   handleJoinGame();
                 }}
-                disabled={loading || !playerName.trim() || !gameId.trim()}
+                disabled={loading || !playerName.trim() || !gameIdInput.trim()}
                 style={{ flex: 2, backgroundColor: '#007bff', color: 'white' }}
               >
-                {loading ? "Joining..." : "Confirm Join"}
+                {loading ? "Joining..." : "Join Game"}
+              </button>
+            </div>
+            
+            <div style={{ marginTop: '10px' }}>
+              <button 
+                onClick={() => {
+                  console.log("🧪 TEST: Direct join test button clicked");
+                  console.log("🧪 TEST: Current form state:", { playerName, gameIdInput });
+                  handleJoinGame();
+                }}
+                style={{ backgroundColor: '#ff9800', color: 'white' }}
+              >
+                Debug Join (Test)
               </button>
             </div>
           </div>
@@ -387,7 +460,7 @@ function App() {
     return (
       <div className="game-container">
         <h1>Game Lobby</h1>
-        <h2>Code: {gameId}</h2>
+        <h2>Code: {joinedGameId}</h2>
         <p>Share this code with others to join!</p>
         
         {error && <div className="error-message">{error}</div>}
@@ -419,24 +492,31 @@ function App() {
         )}
         
         {gameData && gameData.host === playerName && (
-          <button 
-            onClick={() => testAddPlayer(gameId, "TestGuest" + Math.floor(Math.random() * 1000))}
-            style={{ marginTop: '10px', backgroundColor: '#ff9800' }}
-          >
-            Test Direct Player Add
-          </button>
-        )}
-        
-        {gameState === 'lobby' && (
-          <button onClick={debugDatabase} style={{marginTop: '10px'}}>
-            Debug Database
-          </button>
+          <div style={{ marginTop: '10px', display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+            <button 
+              onClick={() => testAddPlayer(joinedGameId, "TestGuest" + Math.floor(Math.random() * 1000))}
+              style={{ backgroundColor: '#ff9800', color: 'white' }}
+            >
+              Test Direct Player Add
+            </button>
+            
+            <button 
+              onClick={() => improvedTestAddPlayer(joinedGameId)}
+              style={{ backgroundColor: '#e91e63', color: 'white' }}
+            >
+              Improved Test Player Add
+            </button>
+            
+            <button onClick={debugDatabase}>
+              Debug Database
+            </button>
+          </div>
         )}
         
         {gameData && (
           <div style={{marginTop: '20px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px'}}>
             <h4>Game Status</h4>
-            <p>Game ID: {gameId}</p>
+            <p>Game ID: {joinedGameId}</p>
             <p>Status: {gameData.status}</p>
             <p>Host: {gameData.host}</p>
             <p>Players: {gameData.players ? Object.values(gameData.players).map(p => p.name).join(', ') : ''}</p>
