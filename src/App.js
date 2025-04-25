@@ -1,281 +1,543 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import {
+  createGame,
+  joinGame,
+  listenToGame,
+  startGame,
+  submitDonations,
+  processDonations,
+  testAddPlayer
+} from './firebase';
+import { ref, set, getDatabase } from 'firebase/database';
 import './App.css';
 
-function MoneyGame() {
-  const [gameState, setGameState] = useState('setup'); // setup, playing, summary, gameover
-  const [players, setPlayers] = useState([]);
-  const [day, setDay] = useState(1);
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  const [donations, setDonations] = useState({});
-  const [showPassScreen, setShowPassScreen] = useState(false);
-  const [allPlayersSubmitted, setAllPlayersSubmitted] = useState(false);
-
-  // Setup: Add players
+function App() {
+  // Game state
   const [playerName, setPlayerName] = useState('');
-  
-  const addPlayer = () => {
-    if (!playerName.trim()) return;
+  const [gameId, setGameId] = useState('');
+  const [gameData, setGameData] = useState(null);
+  const [gameState, setGameState] = useState('setup'); // setup, lobby, playing, gameover
+  const [error, setError] = useState(null);
+  const [currentDonations, setCurrentDonations] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [joinMode, setJoinMode] = useState(false);
+
+  // Listen for game updates
+  useEffect(() => {
+    if (!gameId) return;
     
-    const newPlayer = {
-      id: players.length + 1,
-      name: playerName,
-      money: 100
-    };
+    const normalizedGameId = gameId.trim().toUpperCase();
     
-    setPlayers([...players, newPlayer]);
-    setPlayerName('');
-  };
-  
-  const startGame = () => {
-    if (players.length < 2) {
-      alert("You need at least 2 players to start!");
-      return;
-    }
+    let previousPlayerCount = 0;
     
-    // Initialize donations structure
-    const initialDonations = {};
-    players.forEach(player => {
-      initialDonations[player.id] = {};
-      players.forEach(recipient => {
-        if (player.id !== recipient.id) {
-          initialDonations[player.id][recipient.id] = 0;
-        }
-      });
+    const unsubscribe = listenToGame(normalizedGameId, (data) => {
+      if (!data) {
+        setError("Game not found");
+        return;
+      }
+      
+      // Clear any previous errors when game data is received
+      setError(null);
+      setGameData(data);
+      
+      // Just log new players joining - this is important for debugging
+      const currentPlayerCount = data.players ? Object.keys(data.players).length : 0;
+      if (currentPlayerCount > previousPlayerCount) {
+        console.log(`${currentPlayerCount - previousPlayerCount} new player(s) joined!`);
+      }
+      previousPlayerCount = currentPlayerCount;
+      
+      // Update game state based on game data
+      if (data.status === 'waiting') {
+        setGameState('lobby');
+      } else if (data.status === 'active') {
+        setGameState('playing');
+      } else if (data.status === 'completed') {
+        setGameState('gameover');
+      }
     });
     
-    setDonations(initialDonations);
-    setGameState('playing');
-    setShowPassScreen(true);
-  };
+    return () => unsubscribe();
+  }, [gameId]);
   
-  // Calculate total donations for current player
-  const calculateTotalDonations = () => {
-    if (!currentPlayer || !donations[currentPlayer.id]) return 0;
-    
-    return Object.values(donations[currentPlayer.id]).reduce(
-      (sum, amount) => sum + Number(amount || 0), 0
-    );
-  };
-  
-  // Current player
-  const currentPlayer = players[currentPlayerIndex];
-  
-  // Handle donation change
-  const handleDonationChange = (recipientId, amount) => {
-    const numAmount = amount === '' ? 0 : Number(amount);
-    if (numAmount < 0) return;
-    
-    setDonations(prev => ({
-      ...prev,
-      [currentPlayer.id]: {
-        ...prev[currentPlayer.id],
-        [recipientId]: numAmount
-      }
-    }));
-  };
-  
-  // Submit donations for current player
-  const submitDonations = () => {
-    const total = calculateTotalDonations();
-    
-    if (total > currentPlayer.money) {
-      alert("You don't have enough money for these donations!");
-      return;
-    }
-    
-    if (currentPlayerIndex < players.length - 1) {
-      setCurrentPlayerIndex(currentPlayerIndex + 1);
-      setShowPassScreen(true);
-    } else {
-      setAllPlayersSubmitted(true);
-    }
-  };
-  
-  // Process all donations and advance to next day
-  const processDonations = () => {
-    const updatedPlayers = [...players];
-    
-    // Process each player's donations
-    players.forEach(donor => {
-      const donorIndex = updatedPlayers.findIndex(p => p.id === donor.id);
-      let totalDonated = 0;
+  // Initialize donations when entering game
+  useEffect(() => {
+    if (gameState === 'playing' && gameData && playerName) {
+      // Find the player object by name instead of using the key directly
+      const playerObj = Object.values(gameData.players).find(p => p.name === playerName);
       
-      if (donations[donor.id]) {
-        Object.entries(donations[donor.id]).forEach(([recipientId, amount]) => {
-          const numAmount = Number(amount || 0);
-          if (numAmount > 0) {
-            totalDonated += numAmount;
-            
-            // Add doubled amount to recipient
-            const recipientIndex = updatedPlayers.findIndex(
-              p => p.id === Number(recipientId)
-            );
-            updatedPlayers[recipientIndex].money += numAmount * 2;
+      if (playerObj && !playerObj.ready) {
+        const newDonations = {};
+        
+        Object.values(gameData.players).forEach(player => {
+          if (player.name !== playerName) {
+            newDonations[player.name] = 0;
           }
         });
         
-        // Subtract from donor
-        updatedPlayers[donorIndex].money -= totalDonated;
+        setCurrentDonations(newDonations);
       }
-    });
+    }
+  }, [gameState, gameData, playerName]);
+  
+  // Create a new game
+  const handleCreateGame = async () => {
+    if (!playerName.trim()) {
+      setError("Please enter your name");
+      return;
+    }
     
-    // Add daily $100 to each player
-    updatedPlayers.forEach((player, index) => {
-      updatedPlayers[index].money += 100;
-    });
+    setLoading(true);
+    setError(null);
     
-    setPlayers(updatedPlayers);
-    
-    // Reset donations
-    const resetDonations = {};
-    players.forEach(player => {
-      resetDonations[player.id] = {};
-      players.forEach(recipient => {
-        if (player.id !== recipient.id) {
-          resetDonations[player.id][recipient.id] = 0;
-        }
-      });
-    });
-    setDonations(resetDonations);
-    
-    // Reset player status
-    setCurrentPlayerIndex(0);
-    setAllPlayersSubmitted(false);
-    
-    // Move to next day or end game
-    if (day < 3) {
-      setDay(day + 1);
-      setGameState('summary');
-    } else {
-      setGameState('gameover');
+    try {
+      // Generate a random 6-character game ID
+      const newGameId = Math.random().toString(36).substring(2, 8).toUpperCase();
+      
+      const success = await createGame(newGameId, playerName);
+      if (success) {
+        setGameId(newGameId);
+      } else {
+        setError("Failed to create game");
+      }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
   
-  // Continue to next day
-  const continueToNextDay = () => {
-    setGameState('playing');
-    setShowPassScreen(true);
+  // Join an existing game
+  const handleJoinGame = async () => {
+    if (!playerName.trim()) {
+      setError("Please enter your name");
+      return;
+    }
+    
+    if (!gameId.trim()) {
+      setError("Please enter a game code");
+      return;
+    }
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const normalizedGameId = gameId.trim().toUpperCase();
+      
+      const result = await joinGame(normalizedGameId, playerName);
+      if (result.success) {
+        // Force a local update of player data 
+        const localPlayerKey = `player_${playerName}`;
+        const localPlayerData = {
+          name: playerName,
+          money: 100,
+          isHost: false,
+          ready: false
+        };
+        
+        // Set the normalized ID
+        setGameId(normalizedGameId);
+      } else {
+        setError(result.message || "Failed to join game");
+      }
+    } catch (error) {
+      console.error("Error joining game:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
   
-  // Restart game
-  const restartGame = () => {
-    setGameState('setup');
-    setPlayers([]);
-    setDay(1);
-    setCurrentPlayerIndex(0);
-    setDonations({});
-    setAllPlayersSubmitted(false);
+  // Start the game (host only)
+  const handleStartGame = async () => {
+    if (!gameData || Object.keys(gameData.players).length < 2) {
+      setError("Need at least 2 players to start");
+      return;
+    }
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await startGame(gameId);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
   
-  // Render based on game state
+  // Handle donation changes
+  const handleDonationChange = (recipientName, amount) => {
+    const numAmount = amount === '' ? 0 : Math.max(0, Number(amount));
+    
+    setCurrentDonations(prev => ({
+      ...prev,
+      [recipientName]: numAmount
+    }));
+  };
+  
+  // Calculate total donations
+  const calculateTotalDonations = () => {
+    return Object.values(currentDonations).reduce((sum, amount) => sum + Number(amount || 0), 0);
+  };
+  
+  // Submit donations
+  const handleSubmitDonations = async () => {
+    if (!gameData || !playerName) return;
+    
+    // Find player by name
+    const playerObj = Object.values(gameData.players).find(p => p.name === playerName);
+    if (!playerObj) {
+      console.error("Player not found:", playerName);
+      console.log("Available players:", gameData.players);
+      return;
+    }
+    
+    const playerMoney = playerObj.money;
+    const total = calculateTotalDonations();
+    
+    if (total > playerMoney) {
+      setError("You don't have enough money for these donations");
+      return;
+    }
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await submitDonations(gameId, playerName, currentDonations, gameData.day);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Process all donations (host only)
+  const handleProcessDonations = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await processDonations(gameId);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Clean up the addTestPlayer function
+  const addTestPlayer = async () => {
+    if (!gameId) {
+      setError("No game ID available");
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const testName = "Test" + Math.floor(Math.random() * 1000);
+      const db = getDatabase();
+      
+      // Use a prefixed key
+      const playerKey = `player_${testName}`;
+      
+      console.log(`Directly adding test player ${testName} to game ${gameId}`);
+      
+      await set(ref(db, `games/${gameId}/players/${playerKey}`), {
+        name: testName,
+        money: 100,
+        isHost: false,
+        ready: false
+      });
+      
+      console.log("Test player added successfully");
+      setError(null);
+    } catch (error) {
+      console.error("Error adding test player:", error);
+      setError("Failed to add test player: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Fix the debugDatabase function
+  const debugDatabase = async () => {
+    try {
+      // Remove these imports and use the already imported functions
+      // const { getDatabase, ref, get } = require('firebase/database');
+      const db = getDatabase();
+      
+      // Check if the game exists
+      const gameRef = ref(db, `games/${gameId}`);
+      const snapshot = await get(gameRef);
+      
+      if (snapshot.exists()) {
+        console.log("✅ GAME EXISTS:", snapshot.val());
+        console.log("Players:", snapshot.val().players || "No players");
+      } else {
+        console.log("❌ GAME NOT FOUND");
+        
+        // Check what games exist
+        const allGamesRef = ref(db, 'games');
+        const allGames = await get(allGamesRef);
+        console.log("Available games:", allGames.val() || "None");
+      }
+    } catch (error) {
+      console.error("Debug error:", error);
+    }
+  };
+  
+  // RENDER FUNCTIONS
+  
+  // Setup screen
   if (gameState === 'setup') {
     return (
       <div className="game-container">
-        <h1>Money Game Setup</h1>
+        <h1>Money Game</h1>
         
-        <div className="setup-section">
-          <h2>Add Players</h2>
-          <div className="add-player-form">
-            <input
-              type="text"
-              placeholder="Player Name"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addPlayer()}
-            />
-            <button onClick={addPlayer}>Add Player</button>
+        {error && <div className="error-message">{error}</div>}
+        
+        {!joinMode ? (
+          // Initial screen with create or join options
+          <div className="setup-section">
+            <div className="form-group">
+              <label>Your Name</label>
+              <input
+                type="text"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                placeholder="Enter your name"
+              />
+            </div>
+            
+            <button 
+              className="start-game-button" 
+              onClick={handleCreateGame}
+              disabled={loading || !playerName.trim()}
+            >
+              {loading ? "Creating..." : "Create New Game"}
+            </button>
+            
+            <div className="or-divider">OR</div>
+            
+            <button 
+              onClick={() => setJoinMode(true)}
+              className="join-button"
+              style={{ display: 'block', width: '100%', margin: '15px 0', padding: '12px', backgroundColor: '#007bff', color: 'white' }}
+            >
+              Join Existing Game
+            </button>
           </div>
-          
-          <div className="players-list">
-            <h3>Players ({players.length})</h3>
-            {players.length === 0 ? (
-              <p>No players added yet</p>
-            ) : (
-              <ul>
-                {players.map((player, index) => (
-                  <li key={index}>{player.name}</li>
-                ))}
-              </ul>
-            )}
+        ) : (
+          // Join mode screen
+          <div className="join-section">
+            <h2>Join a Game</h2>
+            
+            <div className="form-group">
+              <label>Your Name</label>
+              <input
+                type="text"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                placeholder="Enter your name"
+                autoFocus
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Game Code</label>
+              <input
+                type="text"
+                value={gameId}
+                onChange={(e) => setGameId(e.target.value)}
+                placeholder="Enter game code"
+              />
+            </div>
+            
+            <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+              <button 
+                onClick={() => setJoinMode(false)}
+                style={{ flex: 1, backgroundColor: '#6c757d', color: 'white' }}
+              >
+                Back
+              </button>
+              
+              <button 
+                onClick={() => {
+                  console.log("Join game confirmed for player:", playerName, "to game:", gameId);
+                  handleJoinGame();
+                }}
+                disabled={loading || !playerName.trim() || !gameId.trim()}
+                style={{ flex: 2, backgroundColor: '#007bff', color: 'white' }}
+              >
+                {loading ? "Joining..." : "Confirm Join"}
+              </button>
+            </div>
           </div>
-          
-          <button 
-            className="start-game-button" 
-            onClick={startGame}
-            disabled={players.length < 2}
-          >
-            Start Game
-          </button>
-        </div>
+        )}
       </div>
     );
   }
   
-  if (gameState === 'playing') {
-    if (showPassScreen) {
-      return (
-        <div className="pass-screen">
-          <h2>{currentPlayer.name}'s Turn</h2>
-          <p>Please ensure no other players are looking at the screen</p>
-          <div className="privacy-warning">
-            🔒 PRIVACY MODE 🔒
-          </div>
-          <button className="continue-button" onClick={() => setShowPassScreen(false)}>
-            I am {currentPlayer.name} - Show My Information
-          </button>
+  // Lobby screen
+  if (gameState === 'lobby') {
+    return (
+      <div className="game-container">
+        <h1>Game Lobby</h1>
+        <h2>Code: {gameId}</h2>
+        <p>Share this code with others to join!</p>
+        
+        {error && <div className="error-message">{error}</div>}
+        
+        <div className="players-list">
+          <h3>Players ({gameData ? Object.keys(gameData.players).length : 0})</h3>
+          {gameData && Object.entries(gameData.players).map(([key, player]) => (
+            <div 
+              key={key} 
+              className={`player-item ${player.isHost ? 'host' : ''} ${player.name === playerName ? 'current-player' : ''}`}
+            >
+              {player.name} {player.isHost ? '(Host)' : ''} {player.name === playerName ? '(You)' : ''}
+            </div>
+          ))}
         </div>
-      );
-    }
+        
+        {gameData && Object.values(gameData.players).some(p => p.name === playerName && p.isHost) && (
+          <button 
+            className="start-game-button"
+            onClick={handleStartGame}
+            disabled={loading || Object.keys(gameData.players).length < 2}
+          >
+            {loading ? "Starting..." : "Start Game"}
+          </button>
+        )}
+        
+        {gameData && gameData.host !== playerName && (
+          <p className="waiting-message">Waiting for host to start the game...</p>
+        )}
+        
+        {gameData && gameData.host === playerName && (
+          <button 
+            onClick={() => testAddPlayer(gameId, "TestGuest" + Math.floor(Math.random() * 1000))}
+            style={{ marginTop: '10px', backgroundColor: '#ff9800' }}
+          >
+            Test Direct Player Add
+          </button>
+        )}
+        
+        {gameState === 'lobby' && (
+          <button onClick={debugDatabase} style={{marginTop: '10px'}}>
+            Debug Database
+          </button>
+        )}
+        
+        {gameData && (
+          <div style={{marginTop: '20px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px'}}>
+            <h4>Game Status</h4>
+            <p>Game ID: {gameId}</p>
+            <p>Status: {gameData.status}</p>
+            <p>Host: {gameData.host}</p>
+            <p>Players: {gameData.players ? Object.values(gameData.players).map(p => p.name).join(', ') : ''}</p>
+            <p>Player Count: {Object.keys(gameData.players || {}).length}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+  
+  // Playing screen
+  if (gameState === 'playing') {
+    // Find player by name - this is the correct approach
+    const playerObj = gameData ? Object.values(gameData.players).find(p => p.name === playerName) : null;
     
-    if (allPlayersSubmitted) {
+    if (!playerObj) {
+      console.error("Player not found in game data");
       return (
         <div className="game-container">
-          <h1>Day {day} Complete</h1>
-          <p>All players have submitted their donations.</p>
-          <button className="process-button" onClick={processDonations}>
-            Process Donations
+          <div className="error-message">
+            Player data not found. Please refresh or rejoin the game.
+          </div>
+          <button onClick={() => window.location.reload()}>
+            Refresh Game
           </button>
         </div>
       );
     }
     
+    // If player has already submitted donations
+    if (playerObj.ready) {
+      return (
+        <div className="game-container">
+          <h1>Day {gameData.day} - Waiting for Others</h1>
+          
+          <div className="waiting-screen">
+            <p>You've submitted your donations. Waiting for other players...</p>
+            
+            <div className="player-status-list">
+              {Object.values(gameData.players).map(player => (
+                <div key={player.name} className={`player-status ${player.ready ? 'ready' : 'pending'}`}>
+                  {player.name}: {player.ready ? 'Ready ✓' : 'Deciding...'}
+                </div>
+              ))}
+            </div>
+            
+            {gameData.host === playerName && 
+             Object.values(gameData.players).every(p => p.ready) && (
+              <button 
+                className="process-button" 
+                onClick={handleProcessDonations}
+                disabled={loading}
+              >
+                {loading ? "Processing..." : "Everyone is ready! Process donations"}
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    }
+    
+    // Donations interface
     return (
       <div className="game-container">
         <div className="game-header">
-          <h1>Money Game - Day {day}/3</h1>
+          <h1>Money Game - Day {gameData.day}/3</h1>
           <div className="player-turn-indicator">
-            {currentPlayer.name}'s Turn
+            {playerName}'s Turn
           </div>
         </div>
         
+        {error && <div className="error-message">{error}</div>}
+        
         <div className="player-info">
-          <h2>{currentPlayer.name}</h2>
-          <p>Your Balance: ${currentPlayer.money}</p>
-          <p>Remaining After Donations: ${currentPlayer.money - calculateTotalDonations()}</p>
+          <h2>{playerName}</h2>
+          <p>Your Balance: ${playerObj.money}</p>
+          <p>Remaining After Donations: ${playerObj.money - calculateTotalDonations()}</p>
         </div>
         
         <div className="donation-interface">
           <div className="self-box">
             <span className="self-label">Self</span>
             <div className="money-display">
-              ${currentPlayer.money - calculateTotalDonations()}
+              ${playerObj.money - calculateTotalDonations()}
             </div>
           </div>
           
           <div className="donate-area">
             <div className="donate-box">Donate</div>
             <div className="recipient-connections">
-              {players.map((recipient) => (
-                recipient.id !== currentPlayer.id && (
-                  <div key={recipient.id} className="recipient-connection">
-                    <div className="recipient-name">{recipient.name}</div>
+              {Object.values(gameData.players).map(player => (
+                player.name !== playerName && (
+                  <div key={player.name} className="recipient-connection">
+                    <div className="recipient-name">{player.name}</div>
                     <div className="multiplier">2×</div>
                     <input
                       type="number"
                       min="0"
-                      max={currentPlayer.money}
-                      value={donations[currentPlayer.id]?.[recipient.id] || ""}
-                      onChange={(e) => handleDonationChange(recipient.id, e.target.value)}
+                      max={playerObj.money}
+                      value={currentDonations[player.name] || ""}
+                      onChange={(e) => handleDonationChange(player.name, e.target.value)}
                       className="donation-input"
                     />
                   </div>
@@ -287,42 +549,18 @@ function MoneyGame() {
         
         <button 
           className="submit-button" 
-          onClick={submitDonations}
-          disabled={calculateTotalDonations() > currentPlayer.money}
+          onClick={handleSubmitDonations}
+          disabled={loading || calculateTotalDonations() > playerObj.money}
         >
-          Submit Donations
+          {loading ? "Submitting..." : "Submit Donations"}
         </button>
       </div>
     );
   }
   
-  if (gameState === 'summary') {
-    return (
-      <div className="game-container">
-        <h1>Day {day} Summary</h1>
-        
-        <div className="day-summary">
-          <p>All donations have been processed and everyone received $100.</p>
-          
-          <div className="players-summary">
-            {players.map((player, index) => (
-              <div key={index} className="player-summary">
-                <h3>{player.name}</h3>
-                <p>${player.money}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        <button className="continue-button" onClick={continueToNextDay}>
-          Continue to Day {day}
-        </button>
-      </div>
-    );
-  }
-  
+  // Game over screen
   if (gameState === 'gameover') {
-    const allHaveEnough = players.every(player => player.money >= 1000);
+    const allHaveEnough = Object.values(gameData.players).every(p => p.money >= 1000);
     
     return (
       <div className="game-container">
@@ -335,9 +573,9 @@ function MoneyGame() {
           </p>
           
           <div className="final-results">
-            {players.map((player, index) => (
+            {Object.entries(gameData.players).map(([name, player]) => (
               <div 
-                key={index} 
+                key={name} 
                 className={`player-result ${player.money >= 1000 ? "success" : "failure"}`}
               >
                 <h3>{player.name}</h3>
@@ -348,7 +586,7 @@ function MoneyGame() {
           </div>
         </div>
         
-        <button className="restart-button" onClick={restartGame}>
+        <button className="restart-button" onClick={() => window.location.reload()}>
           Play Again
         </button>
       </div>
@@ -358,4 +596,4 @@ function MoneyGame() {
   return <div>Loading...</div>;
 }
 
-export default MoneyGame;
+export default App; 
