@@ -230,6 +230,7 @@ const submitDonations = async (gameId, playerName, donations, day) => {
     
     // Set donations and ready status
     console.log(`📣 BROADCAST: Setting donations for day ${day}`);
+    // Now donations will include both amount and message
     await set(ref(db, `games/${gameId}/donations/${day}/${playerName}`), donations);
     
     console.log(`📣 BROADCAST: Setting player ${playerName} ready status to true`);
@@ -263,7 +264,7 @@ const processDonations = async (gameId) => {
     const updatedPlayers = { ...players };
     
     if (donations && donations[day]) {
-      Object.entries(donations[day]).forEach(([donorName, recipientAmounts]) => {
+      Object.entries(donations[day]).forEach(([donorName, recipientData]) => {
         let totalDonated = 0;
         
         // Find donor player key
@@ -279,8 +280,8 @@ const processDonations = async (gameId) => {
           return;
         }
         
-        Object.entries(recipientAmounts).forEach(([recipientName, amount]) => {
-          const numAmount = Number(amount);
+        Object.entries(recipientData).forEach(([recipientName, data]) => {
+          const numAmount = Number(data.amount);
           totalDonated += numAmount;
           
           // Find recipient player key
@@ -298,7 +299,7 @@ const processDonations = async (gameId) => {
           
           // Add doubled amount to recipient
           updatedPlayers[recipientKey].money += numAmount * 2;
-          console.log(`💰 ${recipientName} receives $${numAmount * 2} from ${donorName}`);
+          console.log(`💰 ${recipientName} receives $${numAmount * 2} from ${donorName} with message: ${data.message}`);
         });
         
         // Subtract from donor

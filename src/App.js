@@ -24,6 +24,7 @@ function App() {
   const [currentDonations, setCurrentDonations] = useState({});
   const [loading, setLoading] = useState(false);
   const [joinMode, setJoinMode] = useState(false);
+  const [currentMessages, setCurrentMessages] = useState({});
 
   // Listen for game updates
   useEffect(() => {
@@ -74,7 +75,7 @@ function App() {
         
         Object.values(gameData.players).forEach(player => {
           if (player.name !== playerName) {
-            newDonations[player.name] = 0;
+            newDonations[player.name] = { amount: 0, message: '' };
           }
         });
         
@@ -180,18 +181,21 @@ function App() {
   };
   
   // Handle donation changes
-  const handleDonationChange = (recipientName, amount) => {
+  const handleDonationChange = (recipientName, amount, message = null) => {
     const numAmount = amount === '' ? 0 : Math.max(0, Number(amount));
     
     setCurrentDonations(prev => ({
       ...prev,
-      [recipientName]: numAmount
+      [recipientName]: {
+        amount: numAmount,
+        message: message !== null ? message : (prev[recipientName]?.message || '')
+      }
     }));
   };
   
   // Calculate total donations
   const calculateTotalDonations = () => {
-    return Object.values(currentDonations).reduce((sum, amount) => sum + Number(amount || 0), 0);
+    return Object.values(currentDonations).reduce((sum, amount) => sum + Number(amount?.amount || 0), 0);
   };
   
   // Submit donations
@@ -336,6 +340,23 @@ function App() {
     } catch (error) {
       console.error("Test join process error:", error);
     }
+  };
+  
+  // Add this function near your other helper functions
+  const getReceivedDonations = (gameData, day, playerName) => {
+    if (!gameData?.donations?.[day]) return [];
+    
+    const received = [];
+    Object.entries(gameData.donations[day]).forEach(([donorName, donations]) => {
+      if (donations[playerName] && donations[playerName].amount > 0) {
+        received.push({
+          from: donorName,
+          amount: donations[playerName].amount,
+          message: donations[playerName].message
+        });
+      }
+    });
+    return received;
   };
   
   // RENDER FUNCTIONS
@@ -555,6 +576,18 @@ function App() {
           <div className="waiting-screen">
             <p>You've submitted your donations. Waiting for other players...</p>
             
+            <div className="donations-summary">
+              <h3>Your Donations:</h3>
+              {Object.entries(currentDonations).map(([recipient, data]) => (
+                data.amount > 0 && (
+                  <div key={recipient} className="donation-summary-item">
+                    <p>To {recipient}: ${data.amount}</p>
+                    {data.message && <p className="donation-message">"{data.message}"</p>}
+                  </div>
+                )
+              ))}
+            </div>
+            
             <div className="player-status-list">
               {Object.values(gameData.players).map(player => (
                 <div key={player.name} className={`player-status ${player.ready ? 'ready' : 'pending'}`}>
@@ -596,6 +629,23 @@ function App() {
           <p>Remaining After Donations: ${playerObj.money - calculateTotalDonations()}</p>
         </div>
         
+        {/* Add this new section to show received donations */}
+        {gameData.donations && gameData.donations[gameData.day] && (
+          <div className="received-donations">
+            <h3>Received Donations</h3>
+            <div className="received-donations-list">
+              {getReceivedDonations(gameData, gameData.day, playerName).map((donation, index) => (
+                <div key={index} className="received-donation-item">
+                  <p>From {donation.from}: ${donation.amount} (doubled to ${donation.amount * 2})</p>
+                  {donation.message && (
+                    <p className="received-message">"{donation.message}"</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
         <div className="donation-interface">
           <div className="self-box">
             <span className="self-label">Self</span>
@@ -612,14 +662,25 @@ function App() {
                   <div key={player.name} className="recipient-connection">
                     <div className="recipient-name">{player.name}</div>
                     <div className="multiplier">2×</div>
-                    <input
-                      type="number"
-                      min="0"
-                      max={playerObj.money}
-                      value={currentDonations[player.name] || ""}
-                      onChange={(e) => handleDonationChange(player.name, e.target.value)}
-                      className="donation-input"
-                    />
+                    <div className="donation-inputs">
+                      <input
+                        type="number"
+                        min="0"
+                        max={playerObj.money}
+                        value={currentDonations[player.name]?.amount || ""}
+                        onChange={(e) => handleDonationChange(player.name, e.target.value)}
+                        className="donation-input"
+                        placeholder="Amount"
+                      />
+                      <input
+                        type="text"
+                        value={currentDonations[player.name]?.message || ""}
+                        onChange={(e) => handleDonationChange(player.name, currentDonations[player.name]?.amount || 0, e.target.value)}
+                        className="message-input"
+                        placeholder="Add a message..."
+                        maxLength={50}
+                      />
+                    </div>
                   </div>
                 )
               ))}
