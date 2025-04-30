@@ -26,6 +26,25 @@ function App() {
   const [joinMode, setJoinMode] = useState(false);
   const [currentMessages, setCurrentMessages] = useState({});
 
+  // Replace with this simpler filter implementation
+  const FILTERED_WORDS = [
+    "ass", "React", "React Native", "Swift", "CS 103", "CS 221", "CS 278", "fuck", "bitch", "pussy"
+    // Add more words as needed
+  ];
+
+  const filterMessage = (message) => {
+    if (!message) return '';
+    
+    let filteredMessage = message;
+    FILTERED_WORDS.forEach(word => {
+      // Case insensitive replacement
+      const regex = new RegExp(word, 'gi');
+      filteredMessage = filteredMessage.replace(regex, '*'.repeat(word.length));
+    });
+    
+    return filteredMessage;
+  };
+
   // Listen for game updates
   useEffect(() => {
     if (!joinedGameId) return;
@@ -188,7 +207,7 @@ function App() {
       ...prev,
       [recipientName]: {
         amount: numAmount,
-        message: message !== null ? message : (prev[recipientName]?.message || '')
+        message: message !== null ? filterMessage(message) : (prev[recipientName]?.message || '')
       }
     }));
   };
