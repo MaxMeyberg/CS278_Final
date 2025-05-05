@@ -1,443 +1,896 @@
-/* General styles */
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+:root {
+  /* Vibrant Arcade-Inspired Palette */
+  --primary-color: #e74c3c; /* Vibrant Red */
+  --primary-hover: #c0392b;
+  --secondary-color: #3498db; /* Bright Blue */
+  --secondary-hover: #2980b9;
+  --accent-color: #f1c40f; /* Yellow Accent */
+  --background-body: #f4f7f6; /* Keep body light */
+  --background-container: #ffffff; /* White content boxes */
+  --background-alt: #f8f9fa; /* Very light gray for alternating backgrounds */
+  --text-dark: #2c3e50; /* Dark grey/blue for text */
+  --text-light: #7f8c8d; /* Lighter grey for secondary text */
+  --border-color: #e1e4e8; /* Slightly darker border */
+  --white: #ffffff;
+  /* Keep info/danger/success colors */
+  --danger-bg: #f8d7da;
+  --danger-text: #721c24;
+  --danger-border: #f5c6cb;
+  --success-bg: #d4edda;
+  --success-text: #155724;
+  --success-border: #c3e6cb;
+  --info-bg: #e0f7fa;
+  --info-text: #00778a;
+  --info-border: #b3e5fc;
+
+  --shadow-sm: 0 2px 4px rgba(44, 62, 80, 0.06);
+  --shadow-md: 0 5px 15px rgba(44, 62, 80, 0.08);
+  --border-radius-sm: 6px;
+  --border-radius-md: 10px;
+}
+
+/* === BASE STYLES === */
+
+html,
+body,
+#root {
+  height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #f5f5f5;
+  box-sizing: border-box; /* Apply border-box globally */
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  background-color: var(--background-body);
+  color: var(--text-dark);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .game-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: white;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px; /* More vertical padding */
+  width: 100%;
 }
 
-/* Form elements */
-.form-group {
+/* === CONTENT SECTIONS === */
+.setup-section,
+.join-section,
+.lobby-container,
+.playing-container,
+.gameover-container {
+  background-color: var(--background-container);
+  padding: 40px 50px; /* Slightly more padding */
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 550px; /* Slightly wider max-width */
+  margin-top: 50px; /* More space from top */
+  margin-left: auto; /* Add explicit horizontal centering */
+  margin-right: auto; /* Add explicit horizontal centering */
+  border: 1px solid var(--border-color);
+  text-align: center; /* Center align content within setup */
+}
+
+/* === TYPOGRAPHY === */
+h1,
+h2,
+h3 {
+  color: var(--text-dark);
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 1.8em; /* Slightly smaller H1 */
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+h2 {
+  font-size: 1.4em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+  margin-bottom: 25px;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+h3 {
+  font-size: 1.15em;
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+
+p {
+  margin-bottom: 1rem;
+  color: var(--text-light);
+}
+
+/* === BUTTONS === */
+button {
+  padding: 12px 25px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid transparent; /* Base border */
+  font-size: 1rem;
+  font-weight: 600; /* Bolder buttons */
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.1s ease, border-color 0.2s ease;
+  display: inline-block;
+  text-align: center;
+}
+
+button:active {
+  transform: translateY(1px); /* Subtle press effect */
+}
+
+button:disabled {
+  background-color: #e9ecef !important; /* Lighter gray disabled */
+  color: #adb5bd !important; /* Lighter text color */
+  border-color: #dee2e6 !important;
+  cursor: not-allowed;
+  opacity: 1; /* Use solid colors instead of opacity */
+  box-shadow: none;
+  transform: none;
+}
+
+/* Primary Button (Red) */
+.button-primary,
+.start-game-button,
+.submit-button {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--white);
+  box-shadow: var(--shadow-sm);
+}
+
+.button-primary:not(:disabled):hover,
+.start-game-button:not(:disabled):hover,
+.submit-button:not(:disabled):hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* Secondary Button (Blue - Default) */
+.button-secondary,
+.join-button,
+.restart-button,
+button {
+  /* Default button style if no class */
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: var(--white); /* White text on blue */
+  box-shadow: var(--shadow-sm);
+}
+
+.button-secondary:not(:disabled):hover,
+.join-button:not(:disabled):hover,
+.restart-button:not(:disabled):hover,
+button:not(:disabled):hover {
+  background-color: var(--secondary-hover);
+  border-color: var(--secondary-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* Accent Button (Example usage if needed, maybe for debug?) */
+.button-accent {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--text-dark);
+}
+.button-accent:not(:disabled):hover {
+  background-color: #dab10d; /* Darker yellow */
+  border-color: #dab10d;
+}
+
+/* Full width button utility */
+.button-full-width {
+  display: block;
+  width: 100%;
+  margin-top: 15px;
   margin-bottom: 15px;
+}
+
+/* === FORMS === */
+.form-group {
+  margin-bottom: 25px;
+  text-align: left;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--text-light);
+  font-size: 0.95rem;
 }
 
-.form-group input {
+.form-group input[type="text"],
+.form-group input[type="number"] {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 16px;
+  padding: 14px 18px; /* Slightly larger input */
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 1.05rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: var(--white); /* Ensure background */
+  color: var(--text-dark);
 }
 
-button {
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  font-size: 16px;
-  transition: background-color 0.3s;
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus {
+  border-color: var(--primary-color);
+  /* Use a slightly softer focus ring based on primary color */
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15); /* Red focus ring */
+  outline: none;
 }
 
-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+/* Input invalid state - override default browser red border/shadow */
+/* This might apply if the input has validation attributes like required */
+.form-group input:invalid {
+  border-color: var(--border-color);
+  box-shadow: none;
 }
 
-.start-game-button {
-  display: block;
-  width: 100%;
-  margin: 15px 0;
-  padding: 12px;
-  background-color: #28a745;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.start-game-button:hover:not(:disabled) {
-  background-color: #218838;
-}
-
-/* Setup screen */
-.setup-section {
-  max-width: 500px;
-  margin: 20px auto;
-  padding: 20px;
-  border-radius: 8px;
-  background-color: #f8f9fa;
-}
-
-.or-divider {
-  text-align: center;
-  margin: 15px 0;
-  color: #6c757d;
-  font-weight: bold;
-}
-
-.join-form {
-  display: flex;
-  gap: 10px;
-}
-
-.join-form input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-.join-form button {
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border-radius: 4px;
-}
-
-.join-form button:hover:not(:disabled) {
-  background-color: #0069d9;
-}
-
-/* Error message */
+/* === MESSAGES === */
 .error-message {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 4px;
-  text-align: center;
-}
-
-/* Lobby screen */
-.players-list {
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+  border: 1px solid var(--danger-border);
+  padding: 15px 20px;
+  border-radius: var(--border-radius-sm);
   margin: 20px 0;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-}
-
-.player-item {
-  padding: 10px 15px;
-  margin: 5px 0;
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.player-item.host {
-  background-color: #e3f2fd;
-  border-left: 4px solid #007bff;
+  text-align: center;
+  font-size: 0.95rem;
 }
 
 .waiting-message {
   text-align: center;
-  margin: 20px 0;
-  color: #6c757d;
+  margin: 25px 0;
+  color: var(--text-light);
   font-style: italic;
 }
 
-/* Game screen */
+/* === LOBBY === */
+.players-list {
+  margin: 25px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.player-item {
+  padding: 12px 18px;
+  margin-bottom: 8px;
+  background-color: var(--background-alt); /* Use distinct light gray */
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.player-item.current-player {
+  /* Style for the current player */
+  border-left: 4px solid var(--accent-color);
+  background-color: #fffbeb; /* Lighter yellow accent background */
+}
+
+.player-tags span {
+  /* Common styling for tags */
+  font-size: 0.8em;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin-left: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.host-tag {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+.you-tag {
+  background-color: var(--accent-color);
+  color: var(--text-dark); /* Dark text on yellow */
+}
+
+/* === GAME SCREEN === */
 .game-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .player-turn-indicator {
   padding: 8px 16px;
-  background-color: #007bff;
+  background-color: var(--primary-color);
   color: white;
-  border-radius: 4px;
-  font-weight: bold;
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+  font-size: 0.9rem;
 }
 
-.player-info {
-  text-align: center;
-  margin-bottom: 30px;
-  padding: 15px;
-  background-color: #e3f2fd;
-  border-radius: 8px;
-}
-
-/* Donation interface */
+.player-info,
+.received-donations,
 .donation-interface {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  /* Keep existing styles like background-color: var(--background-alt); etc */
+  border: 1px solid var(--border-color);
+  margin-bottom: 25px; /* Consistent bottom margin */
+  padding: 25px 30px; /* Standardized padding */
+}
+
+.player-info h2 {
+  margin-bottom: 10px;
+  border: none;
+  color: var(--info-text);
+  font-size: 1.3em;
+}
+
+.player-info p {
+  margin: 5px 0;
+  font-size: 1.1em;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+/* Donation Interface */
+.donation-interface {
   margin: 30px 0;
-  gap: 30px;
+  padding: 25px;
+  background-color: var(--background-alt); /* Use distinct light gray */
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
 }
 
-.self-box {
-  position: relative;
-  width: 150px;
-  height: 80px;
-  border: 2px solid #000;
+.donation-row {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: white;
-}
-
-.self-label {
-  position: absolute;
-  top: -10px;
-  right: 10px;
-  background-color: orange;
-  padding: 2px 6px;
-  font-size: 14px;
-}
-
-.money-display {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.donate-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.donate-box {
-  width: 150px;
-  height: 80px;
-  border: 2px solid #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  background-color: white;
-}
-
-.recipient-connections {
-  display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Stack vertically on small screens */
   gap: 15px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+.donation-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
-.recipient-connection {
+.recipient-info {
+  font-weight: 500;
+  color: var(--text-dark);
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
-.recipient-name {
-  width: 100px;
-}
-
 .multiplier {
-  color: red;
-  font-weight: bold;
-  font-size: 16px;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--primary-color);
+  background-color: var(--info-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
-.donation-input {
-  width: 80px;
-  height: 40px;
-  border: 2px solid #000;
+.donation-inputs {
+  display: flex;
+  flex-direction: column; /* Stack inputs */
+  gap: 10px;
+  width: 100%;
+}
+
+.donation-inputs input[type="number"],
+.donation-inputs input[type="text"] {
+  padding: 10px 12px; /* Slightly less padding */
+  font-size: 0.95rem;
+}
+
+.donation-inputs input[type="number"] {
+  width: 100px; /* Fixed width for amount */
   text-align: center;
-  font-size: 16px;
+}
+.message-input {
+  flex-grow: 1;
 }
 
-.submit-button {
-  display: block;
-  margin: 20px auto;
-  padding: 12px 24px;
-  background-color: #007bff;
-  color: white;
-  font-size: 16px;
-}
-
-.submit-button:hover:not(:disabled) {
-  background-color: #0069d9;
-}
-
-/* Waiting screen */
-.waiting-screen {
-  background-color: #f8f9fa;
+/* Donation Summary & Received */
+.donations-summary,
+.received-donations {
+  margin: 25px 0;
   padding: 20px;
-  border-radius: 8px;
-  margin: 20px 0;
+  background-color: var(--background-alt); /* Use distinct light gray */
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+}
+.donations-summary h3,
+.received-donations h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: var(--text-dark);
+  font-size: 1.1em;
+}
+
+.donation-summary-item,
+.received-donation-item {
+  background: var(--white);
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid #eee;
+}
+.donation-summary-item p,
+.received-donation-item p {
+  margin: 4px 0;
+  color: var(--text-dark);
+  font-size: 0.95rem;
+}
+.donation-message,
+.received-message {
+  color: var(--text-light);
+  font-style: italic;
+  margin-top: 8px;
+  font-size: 0.9em;
+  padding-left: 10px;
+  border-left: 3px solid var(--accent-color);
+}
+
+/* Waiting Screen */
+.waiting-screen {
+  background-color: var(--background-container);
+  padding: 30px 40px; /* Ensure good padding */
+  border-radius: var(--border-radius-md);
+  margin: 30px 0;
   text-align: center;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+.player-status-section {
+  margin-top: 25px; /* Space above the section */
+  padding-top: 20px; /* Space above the list */
+  border-top: 1px solid var(--border-color); /* Separator line */
+}
+
+.player-status-section h4 {
+  text-align: center; /* Center the heading */
+  margin-bottom: 15px;
+  color: var(--text-light);
+  font-size: 1em; /* Match other headings */
+  font-weight: 500;
 }
 
 .player-status-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 15px;
+  display: grid; /* Use grid for alignment */
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(180px, 1fr)
+  ); /* Responsive columns */
+  gap: 15px; /* Gap between items */
+  margin-top: 0; /* Remove margin from list itself */
 }
 
 .player-status {
-  padding: 10px 15px;
-  border-radius: 4px;
+  padding: 12px 18px; /* Adjusted padding */
+  border-radius: var(--border-radius-sm);
+  font-size: 0.95rem; /* Slightly larger */
+  font-weight: 500;
+  display: flex; /* Use flex to align name and status */
+  justify-content: space-between; /* Space out name and status */
+  align-items: center;
+  text-align: left; /* Align text left within the box */
+  border: 1px solid transparent; /* Base border */
+}
+
+.player-status .player-name {
+  font-weight: 600; /* Make name slightly bolder */
+  margin-right: 8px; /* Space between name and status text */
+}
+
+.player-status .status-text {
+  /* Styles for the status text itself if needed */
 }
 
 .player-status.ready {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: var(--success-bg);
+  color: var(--success-text);
+  border-color: var(--success-border); /* Use variable */
 }
 
 .player-status.pending {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+  border-color: var(--danger-border); /* Use variable */
 }
 
 .process-button {
-  display: block;
-  margin: 20px auto;
-  padding: 12px 24px;
-  background-color: #6c757d;
-  color: white;
+  background-color: var(--accent-color); /* Use accent for process */
+  color: var(--white);
+  margin-top: 25px;
+}
+.process-button:not(:disabled):hover {
+  background-color: #3dcab0; /* Darker accent */
 }
 
-.process-button:hover:not(:disabled) {
-  background-color: #5a6268;
-}
-
-/* Game over screen */
+/* Game Over Screen */
 .game-result {
   text-align: center;
-  margin: 20px 0;
+  margin: 25px 0;
 }
 
 .final-results {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
+  gap: 25px;
   margin: 30px 0;
 }
 
 .player-result {
-  width: 150px;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 180px; /* Wider cards */
+  padding: 20px;
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+.player-result h3 {
+  margin-bottom: 10px;
+  font-size: 1.1em;
+}
+.player-result p {
+  margin: 5px 0;
+  font-weight: 500;
+}
+.player-result p:last-child {
+  font-size: 0.9em;
+  margin-top: 10px;
+}
+
+.player-result.success {
+  background-color: var(--success-bg);
+  border-left: 5px solid var(--success-text);
+}
+.player-result.success p:last-child {
+  color: var(--success-text);
+}
+
+.player-result.failure {
+  background-color: var(--danger-bg);
+  border-left: 5px solid var(--danger-text);
+}
+.player-result.failure p:last-child {
+  color: var(--danger-text);
+}
+
+/* === REMOVE OLD/REDUNDANT RULES === */
+/* Remove specific rules identified as duplicates or conflicts */
+/* e.g., remove the older body, .game-container, button styles */
+/* from lines 115-200 approx */
+
+/* Media Queries (Optional but recommended) */
+@media (min-width: 600px) {
+  .donation-row {
+    flex-direction: row; /* Switch back to row on larger screens */
+    align-items: center;
+  }
+  .donation-inputs {
+    flex-direction: row; /* Row layout for inputs */
+    width: auto; /* Allow inputs to determine width */
+  }
+}
+
+/* === LOBBY === */
+
+.debug-tools-container {
+  margin-top: 30px; /* Increased spacing */
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  text-align: center; /* Center the heading */
+}
+
+.debug-tools-container h4 {
+  margin-bottom: 15px;
+  color: var(--text-light);
+  font-size: 0.9em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.debug-buttons {
+  display: flex;
+  justify-content: center; /* Center buttons horizontally */
+  gap: 15px; /* Consistent gap */
+  flex-wrap: wrap; /* Allow wrapping on very small screens if necessary */
+}
+
+.button-debug {
+  /* Add specific styles for debug buttons if needed */
+  /* Example: slightly smaller padding? */
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  /* Keep unique background colors via inline styles or specific classes */
+}
+
+/* New styles for table-like donation layout */
+.donation-table {
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+}
+
+.donation-table-header {
+  display: none; /* Hide header on mobile */
+  font-weight: 600;
+  padding: 10px 0;
+  margin-bottom: 5px;
+  border-bottom: 2px solid var(--border-color);
+  color: var(--text-light);
+  font-size: 0.9em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.donation-row {
+  display: flex;
+  flex-direction: column; /* Stack on mobile */
+  gap: 10px; /* Gap for mobile stacking */
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+.donation-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.recipient-col,
+.amount-col,
+.message-col {
+  display: flex;
+  align-items: center; /* Vertically align items in columns */
+  gap: 10px; /* Gap between label/input */
+}
+
+.recipient-col {
+  font-weight: 600;
+  /* Add some spacing if needed */
+}
+
+.multiplier {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--primary-color);
+  background-color: var(--info-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 5px; /* Space it from name */
+}
+
+.donation-input {
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--white);
+}
+
+.amount-input {
+  width: 120px; /* Larger amount input */
   text-align: center;
 }
 
-.success {
-  background-color: #d4edda;
-  border-left: 4px solid #28a745;
-}
-
-.failure {
-  background-color: #f8d7da;
-  border-left: 4px solid #dc3545;
-}
-
-.restart-button {
-  display: block;
-  margin: 20px auto;
-  padding: 12px 24px;
-  background-color: #17a2b8;
-  color: white;
-}
-
-.restart-button:hover:not(:disabled) {
-  background-color: #138496;
-}
-
-.join-section {
-  max-width: 500px;
-  margin: 20px auto;
-  padding: 20px;
-  border-radius: 8px;
-  background-color: #f8f9fa;
-}
-
-.join-button:hover {
-  background-color: #0069d9;
-}
-
-.current-player {
-  background-color: #e8f4ff;
-  border-left: 4px solid #28a745;
-}
-
-.player-item.current-player {
-  background-color: #e8f4ff;
-  border-left: 4px solid #28a745;
-}
-
-.donation-inputs {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  width: 100%;
-}
-
 .message-input {
-  width: 100%;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
+  flex-grow: 1; /* Allow message to take space */
+  width: 100%; /* Full width when stacked */
 }
 
-.donation-summary-item {
-  background: #f5f5f5;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 4px;
+/* Desktop layout for donation table */
+@media (min-width: 768px) {
+  .donation-table-header {
+    display: flex;
+    gap: 15px;
+    padding: 10px 15px; /* Add padding to header */
+    margin-bottom: 10px; /* Space below header */
+    /* Ensure alignment matches columns below */
+  }
+  .donation-row {
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
+    padding: 15px; /* Add padding to rows */
+    border-bottom: 1px solid var(--border-color); /* Keep row separator */
+  }
+  .donation-row:last-child {
+    border-bottom: none;
+  }
+  /* Hover effect for rows */
+  .donation-row:hover {
+    background-color: rgba(
+      74,
+      144,
+      226,
+      0.03
+    ); /* Very subtle primary tint on hover */
+  }
+
+  .recipient-col {
+    flex-basis: 25%;
+    flex-grow: 0;
+    flex-shrink: 0;
+    font-weight: 500;
+    padding-left: 0; /* Remove extra padding if header has it */
+  }
+  .amount-col {
+    flex-basis: 130px; /* Slightly wider */
+    flex-grow: 0;
+    flex-shrink: 0;
+    justify-content: center;
+  }
+  .message-col {
+    flex-basis: 0;
+    flex-grow: 1;
+    padding-right: 0; /* Remove extra padding if header has it */
+  }
+  .donation-table-header .recipient-col,
+  .donation-table-header .amount-col,
+  .donation-table-header .message-col {
+    padding: 0; /* Reset padding just for header cols if needed */
+    display: flex; /* Ensure flex alignment in header */
+    align-items: center;
+  }
+  .donation-table-header .amount-col {
+    justify-content: center; /* Center header text too */
+  }
+
+  .amount-input {
+    width: 100%;
+  }
+  .message-input {
+    width: 100%;
+  }
 }
 
-.donation-message {
-  color: #666;
-  font-style: italic;
-  margin-top: 5px;
+/* === SETUP SCREEN SPECIFIC === */
+.or-divider {
+  text-align: center;
+  margin: 30px 0; /* More space around OR */
+  color: var(--text-light);
+  font-weight: 500;
   font-size: 0.9em;
+  text-transform: uppercase;
+  position: relative;
+  display: block; /* Ensure it takes full width for lines */
 }
 
-.received-donations {
-  margin: 20px 0;
-  padding: 15px;
-  background-color: #f0f8ff;
-  border-radius: 8px;
-  border: 1px solid #b8daff;
+/* Add lines to the OR divider */
+.or-divider::before,
+.or-divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 35%; /* Adjust width of lines */
+  height: 1px;
+  background-color: var(--border-color);
 }
 
-.received-donations h3 {
-  color: #004085;
-  margin-top: 0;
-  margin-bottom: 10px;
+.or-divider::before {
+  left: 10%; /* Adjust position */
 }
 
-.received-donations-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.or-divider::after {
+  right: 10%; /* Adjust position */
 }
 
-.received-donation-item {
-  background: white;
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #dee2e6;
+.setup-section .form-group label {
+  /* Optional: Center label text if input is centered */
+  /* text-align: center; */
 }
 
-.received-donation-item p {
-  margin: 5px 0;
+.setup-section .button-primary {
+  margin-top: 10px; /* Add some space above create button */
 }
 
-.received-message {
-  color: #666;
-  font-style: italic;
-  font-size: 0.9em;
-  margin-top: 5px;
-  padding-left: 10px;
-  border-left: 3px solid #007bff;
-} 
+/* === JOIN SCREEN SPECIFIC === */
+.join-section h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Add specific styles for back/join buttons if needed */
+.join-section .button-secondary {
+  /* Back button */
+  flex: 1;
+}
+.join-section .button-primary {
+  /* Join button */
+  flex: 2;
+}
+
+/* === MEDIA QUERIES === */
+
+/* Styles for smaller screens (Mobile focus) */
+@media (max-width: 600px) {
+  body {
+    font-size: 15px; /* Slightly smaller base font */
+  }
+
+  .game-container {
+    padding: 20px 15px; /* Reduce padding */
+  }
+
+  h1 {
+    font-size: 1.6em;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-size: 1.25em;
+    margin-bottom: 20px;
+  }
+
+  .setup-section,
+  .join-section,
+  .lobby-container,
+  .playing-container,
+  .gameover-container {
+    padding: 25px 20px; /* Reduce padding inside containers */
+    margin-top: 20px; /* Reduce top margin */
+  }
+
+  button {
+    padding: 10px 18px; /* Slightly smaller buttons */
+    font-size: 0.95rem;
+  }
+
+  .form-group input[type="text"],
+  .form-group input[type="number"] {
+    padding: 12px 15px; /* Adjust input padding if needed */
+  }
+
+  /* Adjust donation input sizes specifically if needed */
+  .donation-input {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+  .amount-input {
+    width: 100px; /* Maybe slightly smaller amount input */
+  }
+
+  .final-results {
+    gap: 15px; /* Smaller gap in game over */
+  }
+  .player-result {
+    width: calc(50% - 10px); /* Two columns on mobile */
+    padding: 15px;
+  }
+
+  /* Ensure mobile styles don't conflict */
+  .player-info,
+  .received-donations,
+  .donation-interface {
+    padding: 20px; /* Maintain mobile padding */
+    margin-bottom: 20px; /* Mobile margin */
+  }
+}
