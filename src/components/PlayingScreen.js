@@ -156,8 +156,8 @@ function PlayingScreen({
               (donation, index) => (
                 <div key={index} className="received-donation-item">
                   <p>
-                    From {donation.from}: ${donation.amount} (doubled to $
-                    {donation.amount * 2})
+                    From {donation.from}: ${donation.amount} (tripled to $
+                    {donation.amount * 3})
                   </p>
                   {donation.message && (
                     <p className="received-message">"{donation.message}"</p>
@@ -176,7 +176,7 @@ function PlayingScreen({
       )}
       {/* Donation Interface - Redesigned */}
       <div className="donation-interface">
-        <h3>Donate to Others (Gets Doubled!)</h3>
+        <h3>Donate to Others (Gets Tripled!)</h3>
         <div className="donation-table">
           {" "}
           {/* Use divs for table-like structure */}
@@ -189,7 +189,7 @@ function PlayingScreen({
             <div key={player.name} className="donation-row">
               <div className="recipient-col">
                 <span className="recipient-name">{player.name}</span>
-                <span className="multiplier">2×</span>
+                <span className="multiplier">3×</span>
               </div>
               <div className="amount-col">
                 <input
