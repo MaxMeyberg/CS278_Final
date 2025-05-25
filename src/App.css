@@ -895,7 +895,7 @@ button:not(:disabled):hover {
   }
 }
 
-/* === HOW TO PLAY FLOATING BUTTON & MODAL (IMPROVED) === */
+/* === HOW TO PLAY FLOATING BUTTON (SIMPLE ICON) === */
 .howto-float-btn {
   position: fixed;
   top: 28px;
@@ -903,20 +903,24 @@ button:not(:disabled):hover {
   z-index: 1100;
   background: var(--white);
   color: var(--primary-color);
-  border: 2px solid var(--primary-color);
+  border: 2.5px solid var(--primary-color);
   border-radius: 50%;
   width: 52px;
   height: 52px;
-  font-size: 2rem;
-  font-weight: bold;
-  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.1);
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.13);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s, box-shadow 0.2s, border-color 0.2s, color 0.2s,
+  transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s,
     transform 0.1s;
   outline: none;
+}
+.howto-float-icon {
+  font-size: 2.1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .howto-float-btn:active {
   transform: scale(0.97);
@@ -925,30 +929,13 @@ button:not(:disabled):hover {
   border-color: var(--secondary-color);
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
 }
-.howto-float-btn:hover {
+.howto-float-btn:hover,
+.howto-float-btn:focus {
   background: var(--primary-color);
-  color: var(--white);
   border-color: var(--primary-hover);
-}
-.howto-float-btn::after {
-  content: "How to Play";
-  display: none;
-  position: absolute;
-  top: 110%;
-  right: 0;
-  background: var(--text-dark);
-  color: var(--white);
-  font-size: 0.95rem;
-  padding: 5px 12px;
-  border-radius: 6px;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.1);
-  pointer-events: none;
-}
-@media (hover: hover) and (pointer: fine) {
-  .howto-float-btn:hover::after {
-    display: block;
-  }
+  box-shadow: 0 6px 24px rgba(231, 76, 60, 0.18),
+    0 0 0 4px rgba(231, 76, 60, 0.1);
+  transform: scale(1.06);
 }
 @media (max-width: 600px) {
   .howto-float-btn {
@@ -956,8 +943,10 @@ button:not(:disabled):hover {
     right: 10px;
     width: 44px;
     height: 44px;
-    font-size: 1.5rem;
     border-width: 1.5px;
+  }
+  .howto-float-icon {
+    font-size: 1.5em;
   }
 }
 
@@ -978,8 +967,8 @@ button:not(:disabled):hover {
   background: var(--background-container);
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-md);
-  padding: 36px 32px 28px 32px;
-  max-width: 440px;
+  padding: 44px 38px 36px 38px;
+  max-width: 520px;
   width: 100%;
   position: relative;
   text-align: left;
@@ -1019,9 +1008,8 @@ button:not(:disabled):hover {
 }
 @media (max-width: 600px) {
   .howto-modal-content {
-    padding: 20px 8px 16px 8px;
     max-width: 98vw;
-    font-size: 0.98em;
+    padding: 24px 6px 18px 6px;
   }
   .howto-modal-close {
     top: 8px;
@@ -1056,4 +1044,172 @@ button:not(:disabled):hover {
   margin-top: 10px;
   text-align: left;
   font-style: italic;
+}
+
+/* === SPLASH SCREEN === */
+.splash-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #f4f7f6 0%, #e9f0fb 100%);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: splashFadeIn 0.5s;
+  transition: opacity 0.5s;
+  opacity: 1;
+}
+.splash-fadeout {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.splash-content {
+  text-align: center;
+  background: var(--background-container);
+  padding: 48px 36px 40px 36px;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.13);
+  border: 1.5px solid var(--border-color);
+  animation: splashPopIn 0.7s cubic-bezier(0.23, 1.12, 0.62, 1.01);
+}
+.splash-logo {
+  font-size: 3.2rem;
+  margin-bottom: 18px;
+  filter: drop-shadow(0 2px 8px #f1c40f55);
+}
+.splash-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  letter-spacing: 1.5px;
+}
+.splash-tagline {
+  font-size: 1.15rem;
+  color: var(--secondary-color);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-bottom: 0;
+}
+@keyframes splashFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes splashPopIn {
+  0% {
+    transform: scale(0.92) translateY(30px);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.04) translateY(-8px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* === POLISH MODAL & BUTTONS === */
+.howto-modal-content {
+  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.13);
+  border-radius: 16px;
+  border-width: 1.5px;
+  padding: 40px 32px 32px 32px;
+}
+.howto-modal-close {
+  font-size: 2.1rem;
+  color: var(--secondary-color);
+  top: 18px;
+  right: 20px;
+  transition: color 0.2s;
+}
+.howto-modal-close:hover {
+  color: var(--primary-color);
+}
+.howto-modal-content h2 {
+  font-size: 1.5em;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin-bottom: 22px;
+}
+.howto-description p,
+.howto-description ul {
+  font-size: 1.09em;
+}
+.howto-description ul {
+  margin-bottom: 20px;
+}
+.howto-inspiration {
+  font-size: 1.01em;
+  color: var(--secondary-color);
+  font-weight: 600;
+}
+.howto-float-btn {
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.13);
+  border-radius: 50%;
+  font-weight: 800;
+  border-width: 2.5px;
+  background: var(--white);
+  color: var(--primary-color);
+  transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.howto-float-btn:hover,
+.howto-float-btn:focus {
+  background: var(--primary-color);
+  border-color: var(--primary-hover);
+  box-shadow: 0 6px 24px rgba(231, 76, 60, 0.18),
+    0 0 0 4px rgba(231, 76, 60, 0.1);
+  transform: scale(1.06);
+}
+.howto-float-icon svg {
+  display: block;
+  width: 2em;
+  height: 2em;
+  color: var(--primary-color);
+  transition: color 0.2s, background 0.2s, filter 0.2s;
+  filter: drop-shadow(0 2px 6px rgba(231, 76, 60, 0.08));
+}
+.howto-float-icon svg rect {
+  fill: var(--primary-color) !important;
+  transition: fill 0.2s;
+}
+.howto-float-btn:hover .howto-float-icon svg rect,
+.howto-float-btn:focus .howto-float-icon svg rect {
+  fill: var(--accent-color) !important;
+}
+.howto-float-btn:hover .howto-float-icon svg circle,
+.howto-float-btn:focus .howto-float-icon svg circle {
+  stroke: #fff;
+  fill: var(--primary-color);
+}
+.howto-float-btn:focus .howto-float-icon svg,
+.howto-float-btn:hover .howto-float-icon svg {
+  filter: drop-shadow(0 0 8px #fff8) drop-shadow(0 2px 8px #e74c3c55);
+}
+@media (max-width: 600px) {
+  .splash-content {
+    padding: 32px 10px 24px 10px;
+    border-radius: 12px;
+  }
+  .splash-title {
+    font-size: 1.4rem;
+  }
+  .splash-logo {
+    font-size: 2.1rem;
+  }
+  .howto-modal-content {
+    padding: 24px 6px 18px 6px;
+    border-radius: 10px;
+  }
 }

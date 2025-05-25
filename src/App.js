@@ -33,6 +33,8 @@ function App() {
   const [joinMode, setJoinMode] = useState(false);
   const [currentMessages, setCurrentMessages] = useState({});
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
+  const [splashFading, setSplashFading] = useState(false);
 
   // Replace with this simpler filter implementation
   const FILTERED_WORDS = [
@@ -444,7 +446,28 @@ function App() {
     return received;
   };
 
+  useEffect(() => {
+    const fadeTimer = setTimeout(() => setSplashFading(true), 1200);
+    const hideTimer = setTimeout(() => setShowSplash(false), 1500);
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(hideTimer);
+    };
+  }, []);
+
   // RENDER FUNCTIONS
+
+  if (showSplash) {
+    return (
+      <div className={`splash-overlay${splashFading ? " splash-fadeout" : ""}`}>
+        <div className="splash-content">
+          <div className="splash-logo">💸</div>
+          <h1 className="splash-title">Money Game</h1>
+          <p className="splash-tagline">Trust. Bluff. Win Together.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Setup screen
   if (gameState === "setup") {
@@ -457,7 +480,40 @@ function App() {
           aria-label="How to Play"
           type="button"
         >
-          ?
+          <span className="howto-float-icon" aria-hidden="true">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 28 28"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="14"
+                cy="14"
+                r="12"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                fill="#fff"
+              />
+              <rect
+                x="13.1"
+                y="12"
+                width="1.8"
+                height="8"
+                rx="0.9"
+                fill="var(--primary-color)"
+              />
+              <rect
+                x="13.1"
+                y="7.2"
+                width="1.8"
+                height="1.8"
+                rx="0.9"
+                fill="var(--primary-color)"
+              />
+            </svg>
+          </span>
         </button>
         <HowToPlayModal
           open={showHowToPlay}
@@ -490,7 +546,40 @@ function App() {
           aria-label="How to Play"
           type="button"
         >
-          ?
+          <span className="howto-float-icon" aria-hidden="true">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 28 28"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="14"
+                cy="14"
+                r="12"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                fill="#fff"
+              />
+              <rect
+                x="13.1"
+                y="12"
+                width="1.8"
+                height="8"
+                rx="0.9"
+                fill="var(--primary-color)"
+              />
+              <rect
+                x="13.1"
+                y="7.2"
+                width="1.8"
+                height="1.8"
+                rx="0.9"
+                fill="var(--primary-color)"
+              />
+            </svg>
+          </span>
         </button>
         <HowToPlayModal
           open={showHowToPlay}
@@ -522,7 +611,40 @@ function App() {
           aria-label="How to Play"
           type="button"
         >
-          ?
+          <span className="howto-float-icon" aria-hidden="true">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 28 28"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="14"
+                cy="14"
+                r="12"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                fill="#fff"
+              />
+              <rect
+                x="13.1"
+                y="12"
+                width="1.8"
+                height="8"
+                rx="0.9"
+                fill="var(--primary-color)"
+              />
+              <rect
+                x="13.1"
+                y="7.2"
+                width="1.8"
+                height="1.8"
+                rx="0.9"
+                fill="var(--primary-color)"
+              />
+            </svg>
+          </span>
         </button>
         <HowToPlayModal
           open={showHowToPlay}

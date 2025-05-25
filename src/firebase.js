@@ -1,5 +1,13 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, get, onValue, onDisconnect, update } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  set,
+  get,
+  onValue,
+  onDisconnect,
+  update,
+} from "firebase/database";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -10,7 +18,7 @@ const firebaseConfig = {
   storageBucket: "cs278-final-67682.firebasestorage.app",
   messagingSenderId: "976681255575",
   appId: "1:976681255575:web:1fe065069b7553f6cddfd2",
-  measurementId: "G-106D90ZQ5J"
+  measurementId: "G-106D90ZQ5J",
 };
 
 // Initialize Firebase
@@ -18,45 +26,53 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // Monitor WebSocket connection status
-const connectedRef = ref(db, '.info/connected');
+const connectedRef = ref(db, ".info/connected");
 onValue(connectedRef, (snap) => {
   const isConnected = snap.val();
-  console.log('🔌 WEBSOCKET CONNECTION STATUS:', isConnected ? 'CONNECTED' : 'DISCONNECTED');
+  console.log(
+    "🔌 WEBSOCKET CONNECTION STATUS:",
+    isConnected ? "CONNECTED" : "DISCONNECTED"
+  );
 });
 
 // Create a new game
 const createGame = async (gameId, hostName) => {
   try {
-    console.log('📣 BROADCAST: Creating new game:', gameId, 'with host:', hostName);
+    console.log(
+      "📣 BROADCAST: Creating new game:",
+      gameId,
+      "with host:",
+      hostName
+    );
     const normalizedGameId = gameId.trim().toUpperCase();
-    
+
     const playerKey = `player_${hostName}`;
     const gameRef = ref(db, `games/${normalizedGameId}`);
     const gameData = {
-      status: 'waiting',
+      status: "waiting",
       day: 1,
       host: hostName,
-      players: {}, 
-      created: new Date().toISOString()
+      players: {},
+      created: new Date().toISOString(),
     };
-    
+
     gameData.players[playerKey] = {
       name: hostName,
       money: 100,
       isHost: true,
-      ready: false
+      ready: false,
     };
-    
+
     await set(gameRef, gameData);
-    console.log('📣 BROADCAST SENT: Game created, data:', gameData);
-    
+    console.log("📣 BROADCAST SENT: Game created, data:", gameData);
+
     // Make sure to define snapshot before using it
     const snapshot = await get(gameRef);
     if (snapshot.exists()) {
-      console.log('✅ Game creation verified in database');
+      console.log("✅ Game creation verified in database");
       return true;
     } else {
-      console.error('❌ Game creation failed - not found in database');
+      console.error("❌ Game creation failed - not found in database");
       return false;
     }
   } catch (error) {
@@ -67,59 +83,68 @@ const createGame = async (gameId, hostName) => {
 
 // Replace your joinGame function with this version
 const joinGame = async (gameId, playerName) => {
-  console.log("🔍 FIREBASE: joinGame function called with:", { gameId, playerName });
-  
+  console.log("🔍 FIREBASE: joinGame function called with:", {
+    gameId,
+    playerName,
+  });
+
   if (!playerName || !playerName.trim()) {
     console.log("❌ FIREBASE: Empty player name");
     return { success: false, message: "Please enter your name" };
   }
-  
+
   if (!gameId || !gameId.trim()) {
     console.log("❌ FIREBASE: Empty game ID");
     return { success: false, message: "Please enter a game code" };
   }
-  
+
   try {
     const normalizedGameId = gameId.trim().toUpperCase();
     const playerKey = `player_${playerName}`;
-    
-    console.log(`🧪 JOIN: Adding player "${playerName}" to game "${normalizedGameId}"`);
-    
+
+    console.log(
+      `🧪 JOIN: Adding player "${playerName}" to game "${normalizedGameId}"`
+    );
+
     // First check if the game exists
     const gameRef = ref(db, `games/${normalizedGameId}`);
     const snapshot = await get(gameRef);
-    
+
     if (!snapshot.exists()) {
       console.error(`❌ Game not found: ${normalizedGameId}`);
       return { success: false, message: "Game not found" };
     }
-    
+
     // Check if game already started
-    if (snapshot.val().status !== 'waiting') {
+    if (snapshot.val().status !== "waiting") {
       console.error(`❌ Game already started: ${normalizedGameId}`);
       return { success: false, message: "Game has already started" };
     }
-    
+
     // Check if name is already taken
     if (snapshot.val().players) {
-      const existingPlayer = Object.values(snapshot.val().players).find(p => p.name === playerName);
+      const existingPlayer = Object.values(snapshot.val().players).find(
+        (p) => p.name === playerName
+      );
       if (existingPlayer) {
         console.error(`❌ Name already taken: ${playerName}`);
         return { success: false, message: "That name is already taken" };
       }
     }
-    
+
     // USE EXACTLY THE SAME METHOD THAT WORKS IN testAddPlayer
     console.log(`🧪 Using direct set method to add player...`);
     await set(ref(db, `games/${normalizedGameId}/players/${playerKey}`), {
       name: playerName,
       money: 100,
       isHost: false,
-      ready: false
+      ready: false,
     });
-    
+
     // Verify the player was added
-    const verifySnapshot = await get(ref(db, `games/${normalizedGameId}/players/${playerKey}`));
+    const verifySnapshot = await get(
+      ref(db, `games/${normalizedGameId}/players/${playerKey}`)
+    );
     if (verifySnapshot.exists()) {
       console.log(`✅ Player added successfully: ${playerName}`);
       return { success: true };
@@ -137,20 +162,26 @@ const joinGame = async (gameId, playerName) => {
 const listenToGame = (gameId, callback) => {
   console.log(`👂 WEBSOCKET: Setting up listener for game: ${gameId}`);
   const gameRef = ref(db, `games/${gameId}`);
-  
+
   return onValue(gameRef, (snapshot) => {
     if (snapshot.exists()) {
       const gameData = snapshot.val();
-      console.log(`👂 WEBSOCKET RECEIVED DATA:`, JSON.stringify(gameData, null, 2));
-      
+      console.log(
+        `👂 WEBSOCKET RECEIVED DATA:`,
+        JSON.stringify(gameData, null, 2)
+      );
+
       // Specifically check players
       if (gameData.players) {
         console.log(`👥 PLAYERS FOUND:`, Object.keys(gameData.players).length);
-        console.log(`👥 PLAYER DATA:`, JSON.stringify(gameData.players, null, 2));
+        console.log(
+          `👥 PLAYER DATA:`,
+          JSON.stringify(gameData.players, null, 2)
+        );
       } else {
         console.log(`❌ NO PLAYERS FOUND in game data`);
       }
-      
+
       callback(gameData);
     } else {
       console.error(`❌ WEBSOCKET ERROR: Game ${gameId} not found in listener`);
@@ -164,18 +195,22 @@ const testAddPlayer = async (gameId, playerName) => {
   try {
     const normalizedGameId = gameId.trim().toUpperCase();
     const playerKey = `player_${playerName}`;
-    
-    console.log(`🧪 TEST: Directly adding player "${playerName}" to game "${normalizedGameId}"`);
-    
+
+    console.log(
+      `🧪 TEST: Directly adding player "${playerName}" to game "${normalizedGameId}"`
+    );
+
     await set(ref(db, `games/${normalizedGameId}/players/${playerKey}`), {
       name: playerName,
       money: 100,
       isHost: false,
-      ready: false
+      ready: false,
     });
-    
+
     // Verify
-    const verifySnapshot = await get(ref(db, `games/${normalizedGameId}/players/${playerKey}`));
+    const verifySnapshot = await get(
+      ref(db, `games/${normalizedGameId}/players/${playerKey}`)
+    );
     if (verifySnapshot.exists()) {
       console.log(`✅ TEST SUCCESS: Player added directly`);
       return true;
@@ -193,7 +228,7 @@ const testAddPlayer = async (gameId, playerName) => {
 const startGame = async (gameId) => {
   try {
     console.log(`📣 BROADCAST: Starting game ${gameId}`);
-    await set(ref(db, `games/${gameId}/status`), 'active');
+    await set(ref(db, `games/${gameId}/status`), "active");
     console.log(`📣 BROADCAST SENT: Game ${gameId} status set to active`);
     return true;
   } catch (error) {
@@ -205,37 +240,45 @@ const startGame = async (gameId) => {
 // Submit donations
 const submitDonations = async (gameId, playerName, donations, day) => {
   try {
-    console.log(`📣 BROADCAST: Player ${playerName} submitting donations`, donations);
+    console.log(
+      `📣 BROADCAST: Player ${playerName} submitting donations`,
+      donations
+    );
     const gameRef = ref(db, `games/${gameId}`);
     const snapshot = await get(gameRef);
     if (!snapshot.exists()) {
       console.error(`❌ Game ${gameId} not found during donations`);
       return false;
     }
-    
+
     const gameData = snapshot.val();
     let playerKey = null;
-    
+
     // Find the key for this player
     Object.entries(gameData.players).forEach(([key, player]) => {
       if (player.name === playerName) {
         playerKey = key;
       }
     });
-    
+
     if (!playerKey) {
       console.error(`❌ Player ${playerName} not found for donations`);
       return false;
     }
-    
+
     // Set donations and ready status
     console.log(`📣 BROADCAST: Setting donations for day ${day}`);
     // Now donations will include both amount and message
-    await set(ref(db, `games/${gameId}/donations/${day}/${playerName}`), donations);
-    
-    console.log(`📣 BROADCAST: Setting player ${playerName} ready status to true`);
+    await set(
+      ref(db, `games/${gameId}/donations/${day}/${playerName}`),
+      donations
+    );
+
+    console.log(
+      `📣 BROADCAST: Setting player ${playerName} ready status to true`
+    );
     await set(ref(db, `games/${gameId}/players/${playerKey}/ready`), true);
-    
+
     console.log(`📣 BROADCAST SENT: Donations submitted for ${playerName}`);
     return true;
   } catch (error) {
@@ -254,19 +297,22 @@ const processDonations = async (gameId) => {
       console.error(`❌ Game ${gameId} not found during processing`);
       return false;
     }
-    
+
     const gameData = snapshot.val();
     const { players, donations, day } = gameData;
-    
-    console.log(`Processing day ${day} donations:`, donations && donations[day] ? donations[day] : 'No donations');
-    
+
+    console.log(
+      `Processing day ${day} donations:`,
+      donations && donations[day] ? donations[day] : "No donations"
+    );
+
     // Process donations
     const updatedPlayers = { ...players };
-    
+
     if (donations && donations[day]) {
       Object.entries(donations[day]).forEach(([donorName, recipientData]) => {
         let totalDonated = 0;
-        
+
         // Find donor player key
         let donorKey = null;
         Object.entries(players).forEach(([key, player]) => {
@@ -274,16 +320,16 @@ const processDonations = async (gameId) => {
             donorKey = key;
           }
         });
-        
+
         if (!donorKey) {
           console.error(`❌ Donor ${donorName} not found`);
           return;
         }
-        
+
         Object.entries(recipientData).forEach(([recipientName, data]) => {
           const numAmount = Number(data.amount);
           totalDonated += numAmount;
-          
+
           // Find recipient player key
           let recipientKey = null;
           Object.entries(players).forEach(([key, player]) => {
@@ -291,44 +337,61 @@ const processDonations = async (gameId) => {
               recipientKey = key;
             }
           });
-          
+
           if (!recipientKey) {
             console.error(`❌ Recipient ${recipientName} not found`);
             return;
           }
-          
-          // Add doubled amount to recipient
-          updatedPlayers[recipientKey].money += numAmount * 2;
-          console.log(`💰 ${recipientName} receives $${numAmount * 2} from ${donorName} with message: ${data.message}`);
+
+          // Add tripled amount to recipient
+          updatedPlayers[recipientKey].money += numAmount * 3;
+          console.log(
+            `💰 ${recipientName} receives $${
+              numAmount * 3
+            } from ${donorName} with message: ${data.message}`
+          );
         });
-        
+
         // Subtract from donor
         updatedPlayers[donorKey].money -= totalDonated;
         console.log(`💸 ${donorName} donated $${totalDonated} total`);
       });
     }
-    
+
     // Add daily $100 to each player
-    Object.keys(updatedPlayers).forEach(playerKey => {
+    Object.keys(updatedPlayers).forEach((playerKey) => {
       updatedPlayers[playerKey].money += 100;
       updatedPlayers[playerKey].ready = false;
-      console.log(`💵 ${updatedPlayers[playerKey].name} receives $100 daily income`);
+      console.log(
+        `💵 ${updatedPlayers[playerKey].name} receives $100 daily income`
+      );
     });
-    
+
     // Update game data
     if (day < 3) {
-      console.log(`📣 BROADCAST: Updating player data and advancing to day ${day + 1}`);
+      console.log(
+        `📣 BROADCAST: Updating player data and advancing to day ${day + 1}`
+      );
       await set(ref(db, `games/${gameId}/players`), updatedPlayers);
       await set(ref(db, `games/${gameId}/day`), day + 1);
       console.log(`📣 BROADCAST SENT: Day advanced to ${day + 1}`);
       return true;
     } else {
       // Game over
-      const allHaveEnough = Object.values(updatedPlayers).every(player => player.money >= 1000);
-      console.log(`📣 BROADCAST: Game ending with result: ${allHaveEnough ? 'victory' : 'defeat'}`);
+      const allHaveEnough = Object.values(updatedPlayers).every(
+        (player) => player.money >= 1000
+      );
+      console.log(
+        `📣 BROADCAST: Game ending with result: ${
+          allHaveEnough ? "victory" : "defeat"
+        }`
+      );
       await set(ref(db, `games/${gameId}/players`), updatedPlayers);
-      await set(ref(db, `games/${gameId}/status`), 'completed');
-      await set(ref(db, `games/${gameId}/result`), allHaveEnough ? 'victory' : 'defeat');
+      await set(ref(db, `games/${gameId}/status`), "completed");
+      await set(
+        ref(db, `games/${gameId}/result`),
+        allHaveEnough ? "victory" : "defeat"
+      );
       console.log(`📣 BROADCAST SENT: Game completed`);
       return true;
     }
@@ -344,14 +407,20 @@ const testFirebaseConnection = async () => {
   try {
     // Test database connection
     console.log("🧪 Testing database connection...");
-    const testRef = ref(db, '.info/connected');
-    const connected = await new Promise(resolve => {
-      onValue(testRef, snapshot => {
-        resolve(snapshot.val());
-      }, { onlyOnce: true });
+    const testRef = ref(db, ".info/connected");
+    const connected = await new Promise((resolve) => {
+      onValue(
+        testRef,
+        (snapshot) => {
+          resolve(snapshot.val());
+        },
+        { onlyOnce: true }
+      );
     });
-    console.log(`🧪 Database connection: ${connected ? 'CONNECTED' : 'DISCONNECTED'}`);
-    
+    console.log(
+      `🧪 Database connection: ${connected ? "CONNECTED" : "DISCONNECTED"}`
+    );
+
     // Test write permission
     try {
       console.log("🧪 Testing write permission...");
@@ -362,7 +431,7 @@ const testFirebaseConnection = async () => {
       console.error("❌ Write permission test: FAILED", writeError);
       console.log("📋 This confirms you have a Firebase permissions issue");
     }
-    
+
     return connected;
   } catch (error) {
     console.error("❌ Firebase connection test failed:", error);
@@ -376,58 +445,76 @@ const improvedTestAddPlayer = async (gameId) => {
     const normalizedGameId = gameId.trim().toUpperCase();
     const testPlayerName = "Test" + Math.floor(Math.random() * 10000);
     const playerKey = `player_${testPlayerName}`;
-    
-    console.log(`🧪 IMPROVED TEST: Adding player "${testPlayerName}" to game "${normalizedGameId}"`);
-    
+
+    console.log(
+      `🧪 IMPROVED TEST: Adding player "${testPlayerName}" to game "${normalizedGameId}"`
+    );
+
     // First, get current game data
     const gameRef = ref(db, `games/${normalizedGameId}`);
     const snapshot = await get(gameRef);
-    
+
     if (!snapshot.exists()) {
       console.error(`❌ IMPROVED TEST: Game "${normalizedGameId}" not found`);
       return false;
     }
-    
+
     const gameData = snapshot.val();
-    console.log(`🧪 IMPROVED TEST: Current game data before adding player:`, gameData);
-    
+    console.log(
+      `🧪 IMPROVED TEST: Current game data before adding player:`,
+      gameData
+    );
+
     // Log current players (if any)
     if (gameData.players) {
-      console.log(`🧪 IMPROVED TEST: Current players:`, Object.keys(gameData.players));
+      console.log(
+        `🧪 IMPROVED TEST: Current players:`,
+        Object.keys(gameData.players)
+      );
     } else {
       console.log(`🧪 IMPROVED TEST: No players in game data`);
     }
-    
+
     // Create player data
     const playerData = {
       name: testPlayerName,
       money: 100,
       isHost: false,
-      ready: false
+      ready: false,
     };
-    
+
     // Directly update the game data and write it back completely
-    const updatedGameData = {...gameData};
+    const updatedGameData = { ...gameData };
     if (!updatedGameData.players) {
       updatedGameData.players = {};
     }
     updatedGameData.players[playerKey] = playerData;
-    
-    console.log(`🧪 IMPROVED TEST: Updated game data to write:`, updatedGameData);
-    
+
+    console.log(
+      `🧪 IMPROVED TEST: Updated game data to write:`,
+      updatedGameData
+    );
+
     // Write the entire game data back
     await set(gameRef, updatedGameData);
-    
+
     // Verify
     const verifySnapshot = await get(gameRef);
     const verifyData = verifySnapshot.val();
-    
+
     if (verifyData.players && verifyData.players[playerKey]) {
-      console.log(`✅ IMPROVED TEST: Player "${testPlayerName}" added successfully!`);
-      console.log(`✅ IMPROVED TEST: Updated players:`, Object.keys(verifyData.players));
+      console.log(
+        `✅ IMPROVED TEST: Player "${testPlayerName}" added successfully!`
+      );
+      console.log(
+        `✅ IMPROVED TEST: Updated players:`,
+        Object.keys(verifyData.players)
+      );
       return true;
     } else {
-      console.error(`❌ IMPROVED TEST: Player "${testPlayerName}" not found after adding`);
+      console.error(
+        `❌ IMPROVED TEST: Player "${testPlayerName}" not found after adding`
+      );
       return false;
     }
   } catch (error) {
@@ -445,5 +532,5 @@ export {
   processDonations,
   testAddPlayer,
   testFirebaseConnection,
-  improvedTestAddPlayer
-}; 
+  improvedTestAddPlayer,
+};
