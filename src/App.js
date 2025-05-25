@@ -18,6 +18,7 @@ import "./App.css";
 import SetupScreen from "./components/SetupScreen";
 import LobbyScreen from "./components/LobbyScreen";
 import PlayingScreen from "./components/PlayingScreen";
+import HowToPlayModal from "./components/HowToPlayModal";
 
 function App() {
   // Game state
@@ -31,6 +32,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [joinMode, setJoinMode] = useState(false);
   const [currentMessages, setCurrentMessages] = useState({});
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   // Replace with this simpler filter implementation
   const FILTERED_WORDS = [
@@ -447,53 +449,98 @@ function App() {
   // Setup screen
   if (gameState === "setup") {
     return (
-      <SetupScreen
-        playerName={playerName}
-        setPlayerName={setPlayerName}
-        gameIdInput={gameIdInput}
-        setGameIdInput={setGameIdInput}
-        handleCreateGame={handleCreateGame}
-        handleJoinGame={handleJoinGame}
-        loading={loading}
-        error={error}
-        joinMode={joinMode}
-        setJoinMode={setJoinMode}
-      />
+      <div className="game-container">
+        {/* Floating How to Play button, always visible */}
+        <button
+          className="howto-float-btn"
+          onClick={() => setShowHowToPlay(true)}
+          aria-label="How to Play"
+          type="button"
+        >
+          ?
+        </button>
+        <HowToPlayModal
+          open={showHowToPlay}
+          onClose={() => setShowHowToPlay(false)}
+        />
+        <SetupScreen
+          playerName={playerName}
+          setPlayerName={setPlayerName}
+          gameIdInput={gameIdInput}
+          setGameIdInput={setGameIdInput}
+          handleCreateGame={handleCreateGame}
+          handleJoinGame={handleJoinGame}
+          loading={loading}
+          error={error}
+          joinMode={joinMode}
+          setJoinMode={setJoinMode}
+        />
+      </div>
     );
   }
 
   // Lobby screen
   if (gameState === "lobby") {
     return (
-      <LobbyScreen
-        joinedGameId={joinedGameId}
-        gameData={gameData}
-        playerName={playerName}
-        handleStartGame={handleStartGame}
-        loading={loading}
-        error={error}
-        testAddPlayer={testAddPlayer}
-        improvedTestAddPlayer={improvedTestAddPlayer}
-        debugDatabase={debugDatabase}
-      />
+      <div className="game-container">
+        {/* Floating How to Play button, always visible */}
+        <button
+          className="howto-float-btn"
+          onClick={() => setShowHowToPlay(true)}
+          aria-label="How to Play"
+          type="button"
+        >
+          ?
+        </button>
+        <HowToPlayModal
+          open={showHowToPlay}
+          onClose={() => setShowHowToPlay(false)}
+        />
+        <LobbyScreen
+          joinedGameId={joinedGameId}
+          gameData={gameData}
+          playerName={playerName}
+          handleStartGame={handleStartGame}
+          loading={loading}
+          error={error}
+          testAddPlayer={testAddPlayer}
+          improvedTestAddPlayer={improvedTestAddPlayer}
+          debugDatabase={debugDatabase}
+        />
+      </div>
     );
   }
 
   // Playing screen
   if (gameState === "playing") {
     return (
-      <PlayingScreen
-        gameData={gameData}
-        playerName={playerName}
-        error={error}
-        loading={loading}
-        currentDonations={currentDonations}
-        handleDonationChange={handleDonationChange}
-        calculateTotalDonations={calculateTotalDonations}
-        handleSubmitDonations={handleSubmitDonations}
-        handleProcessDonations={handleProcessDonations}
-        getReceivedDonations={getReceivedDonations}
-      />
+      <div className="game-container">
+        {/* Floating How to Play button, always visible */}
+        <button
+          className="howto-float-btn"
+          onClick={() => setShowHowToPlay(true)}
+          aria-label="How to Play"
+          type="button"
+        >
+          ?
+        </button>
+        <HowToPlayModal
+          open={showHowToPlay}
+          onClose={() => setShowHowToPlay(false)}
+        />
+        <PlayingScreen
+          gameData={gameData}
+          playerName={playerName}
+          error={error}
+          loading={loading}
+          currentDonations={currentDonations}
+          handleDonationChange={handleDonationChange}
+          calculateTotalDonations={calculateTotalDonations}
+          handleSubmitDonations={handleSubmitDonations}
+          handleProcessDonations={handleProcessDonations}
+          getReceivedDonations={getReceivedDonations}
+        />
+      </div>
     );
   }
 

@@ -894,3 +894,166 @@ button:not(:disabled):hover {
     margin-bottom: 20px; /* Mobile margin */
   }
 }
+
+/* === HOW TO PLAY FLOATING BUTTON & MODAL (IMPROVED) === */
+.howto-float-btn {
+  position: fixed;
+  top: 28px;
+  right: 32px;
+  z-index: 1100;
+  background: var(--white);
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  font-size: 2rem;
+  font-weight: bold;
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, box-shadow 0.2s, border-color 0.2s, color 0.2s,
+    transform 0.1s;
+  outline: none;
+}
+.howto-float-btn:active {
+  transform: scale(0.97);
+}
+.howto-float-btn:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+.howto-float-btn:hover {
+  background: var(--primary-color);
+  color: var(--white);
+  border-color: var(--primary-hover);
+}
+.howto-float-btn::after {
+  content: "How to Play";
+  display: none;
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: var(--text-dark);
+  color: var(--white);
+  font-size: 0.95rem;
+  padding: 5px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.1);
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .howto-float-btn:hover::after {
+    display: block;
+  }
+}
+@media (max-width: 600px) {
+  .howto-float-btn {
+    top: 12px;
+    right: 10px;
+    width: 44px;
+    height: 44px;
+    font-size: 1.5rem;
+    border-width: 1.5px;
+  }
+}
+
+.howto-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(44, 62, 80, 0.25);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.howto-modal-content {
+  background: var(--background-container);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 36px 32px 28px 32px;
+  max-width: 440px;
+  width: 100%;
+  position: relative;
+  text-align: left;
+  border: 1px solid var(--border-color);
+}
+.howto-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--text-light);
+  cursor: pointer;
+  z-index: 1;
+  padding: 0 8px;
+  line-height: 1;
+}
+.howto-modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  color: var(--primary-color);
+  font-size: 1.4em;
+  text-align: center;
+}
+.howto-list {
+  padding-left: 18px;
+  margin-bottom: 18px;
+  color: var(--text-dark);
+  font-size: 1.05em;
+}
+.howto-note {
+  color: var(--text-light);
+  font-size: 0.97em;
+  margin-top: 10px;
+  text-align: center;
+}
+@media (max-width: 600px) {
+  .howto-modal-content {
+    padding: 20px 8px 16px 8px;
+    max-width: 98vw;
+    font-size: 0.98em;
+  }
+  .howto-modal-close {
+    top: 8px;
+    right: 8px;
+    font-size: 1.5rem;
+  }
+}
+
+.howto-description {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+.howto-description p {
+  margin-bottom: 16px;
+  color: var(--text-dark);
+  font-size: 1.08em;
+  line-height: 1.6;
+}
+.howto-description ul {
+  margin: 0 0 18px 18px;
+  padding: 0;
+  color: var(--text-dark);
+  font-size: 1.01em;
+  line-height: 1.5;
+}
+.howto-description li {
+  margin-bottom: 8px;
+}
+.howto-inspiration {
+  color: var(--secondary-color);
+  font-size: 0.98em;
+  margin-top: 10px;
+  text-align: left;
+  font-style: italic;
+}
