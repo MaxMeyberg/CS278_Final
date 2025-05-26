@@ -115,7 +115,7 @@ body {
   max-width: 900px;
   min-width: 340px;
   width: 80vw;
-  max-height: 85vh; /* Reduce height to avoid touching bottom */
+  height: 85vh; /* Fixed height instead of max-height */
   margin: 0 auto 2vh auto; /* Add margin-bottom for spacing */
   padding: 40px;
   display: flex;
@@ -123,25 +123,13 @@ body {
   justify-content: flex-start; /* Start from top */
   align-items: center;
   transition: box-shadow 0.3s, border-color 0.3s, background 0.3s;
-  overflow-y: auto; /* Allow scrolling within container if needed */
+  overflow-y: auto !important; /* Allow vertical scrolling */
+  overflow-x: hidden !important; /* But prevent horizontal */
 }
 
 .playing-container {
-  background: var(--background-container);
-  border-radius: 32px;
-  box-shadow: var(--shadow-md);
-  border: 4px solid var(--primary-color);
-  max-width: 900px;
-  min-width: 340px;
-  width: 80vw;
-  max-height: 85vh;
-  margin: 0 auto;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: hidden;
-  gap: 16px; /* Consistent spacing between elements */
+  gap: 16px; /* Consistent spacing between elements for playing screen */
+  padding: 24px; /* Smaller padding for playing screen */
 }
 
 /* === TYPOGRAPHY === */
@@ -157,12 +145,12 @@ h3 {
 
 h1 {
   font-family: "Fredoka", "Baloo 2", "Inter", sans-serif;
-  font-size: 2.8em;
+  font-size: 1.7em;
   font-weight: 900;
   letter-spacing: 1.5px;
   color: var(--primary-color);
   text-shadow: 0 2px 12px #ff6b6b33, 0 1px 0 #23262f;
-  margin-bottom: 44px;
+  margin-bottom: 12px; /* Reduced for mobile */
   transition: color 0.3s;
 }
 
@@ -372,8 +360,8 @@ button:not(:disabled):hover {
   list-style: none;
   display: grid;
   gap: 15px;
-  max-height: 45vh; /* Prevent overflow */
-  overflow-y: auto; /* Scroll inside list if too many players */
+  /* max-height: 45vh; REMOVED - now using truncation */
+  /* overflow-y: auto; REMOVED - now using truncation */
 }
 
 .player-item {
@@ -431,27 +419,146 @@ button:not(:disabled):hover {
 /* === GAME SCREEN === */
 .game-header {
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 12px; /* Reduced from 16px */
   text-align: center;
 }
 
 .game-header h1 {
   font-size: 1.4em;
   margin: 0;
-  padding: 0;
+  padding: 8px; /* Reduced from 12px */
   color: var(--primary-color);
 }
 
-.player-info {
+.player-info,
+.received-messages,
+.donation-interface {
   width: 100%;
-  padding: 16px 20px 12px 20px;
   background: var(--background-container);
   border-radius: var(--border-radius-md);
-  border: 1px solid var(--border-color);
-  margin-bottom: 16px;
+  border: 1.5px solid var(--border-color);
+  margin-bottom: 10px; /* Reduced from 16px */
+  box-shadow: var(--shadow-sm);
+  padding: 12px; /* Reduced from 16px */
+}
+
+.box-header {
+  font-size: 1.15em;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0 0 12px 0;
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+
+.box-header::after {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 4px;
+  background: linear-gradient(90deg, #f1c40f 0%, #e74c3c 100%);
+  border-radius: 2px;
+  margin-left: 8px;
+}
+
+.received-messages {
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+}
+
+/* Received Messages Table Structure */
+.received-messages-table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+}
+
+.received-messages-header {
+  display: flex;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  font-size: 0.85em;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.received-messages-header .sender-col {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.received-messages-header .amount-col {
+  flex-shrink: 0;
+  width: 100px;
+  margin: 0 10px;
+  text-align: center;
+}
+
+.received-messages-header .message-col {
+  flex-grow: 2;
+  text-align: left;
+}
+
+.received-messages-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.received-message-row {
+  padding: 10px 12px;
+  background: var(--background-alt);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.received-message-row .sender-col {
+  flex-grow: 1;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.received-message-row .amount-col {
+  flex-shrink: 0;
+  width: 100px;
+  margin: 0 10px;
+  text-align: center;
+}
+
+.received-message-row .message-col {
+  flex-grow: 2;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.no-message {
+  color: var(--text-light);
+  opacity: 0.5;
+}
+
+/* Remove h4 and h3 margin/padding overrides for these boxes */
+.player-info h2,
+.received-messages h4,
+.donation-interface > h3 {
+  margin: 0 0 12px 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+/* Remove old accent underline for donation-interface > h3 */
+.donation-interface > h3::after {
+  display: none;
 }
 
 .player-info h2 {
@@ -545,296 +652,336 @@ button:not(:disabled):hover {
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: 15px;
-  overflow: visible;
-  position: relative;
+  gap: 16px;
 }
 
 .donation-table-header {
   display: flex;
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  font-size: 0.85em;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--background-alt);
+  border-bottom: 1px solid var(--border-color);
   color: var(--text-light);
+  font-size: 0.9em;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--border-color);
 }
 
-.donation-table-header .recipient-col {
-  flex-grow: 1;
-  text-align: left;
-}
-
-.donation-table-header .amount-col {
-  flex-shrink: 0;
-  width: 100px; /* Match width of input column */
-  margin: 0 10px; /* Match margin of input column */
-  text-align: center;
-}
-
-.donation-table-header .message-col {
-  flex-grow: 2;
-  text-align: left;
-}
-
-/* The scrollable container - reduce height to fit everything */
 .donation-rows {
-  max-height: 35vh;
-  min-height: 150px;
-  overflow-y: auto;
-  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
   background: var(--background-alt);
   border-radius: var(--border-radius-sm);
   border: 1px solid var(--border-color);
-  position: relative;
 }
 
-/* Webkit scrollbar styles - make it more prominent */
-.donation-rows::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-.donation-rows::-webkit-scrollbar-track {
-  background: var(--background-alt);
-  border-radius: 4px;
-  margin: 4px 0;
-}
-
-.donation-rows::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
-  border-radius: 4px;
-  border: 2px solid var(--background-alt);
-}
-
-.donation-rows::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-hover);
-}
-
-/* Fade effects to indicate scrollability */
-.donation-rows::before,
-.donation-rows::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 20px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.donation-rows::before {
-  top: 0;
-  background: linear-gradient(var(--background-alt) 0%, transparent 100%);
-}
-
-.donation-rows::after {
-  bottom: 0;
-  background: linear-gradient(transparent 0%, var(--background-alt) 100%);
-}
-
-/* Subtle bounce animation for the first row */
-@keyframes subtleBounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-2px);
-  }
-}
-
-.donation-row:first-child {
-  animation: subtleBounce 2s ease-in-out infinite;
-}
-
-/* Enhanced hover effect for rows */
 .donation-row {
-  padding: 10px 12px;
-  margin-bottom: 6px;
-  background: var(--background-container);
-  border-radius: var(--border-radius-sm);
-  border: 1px solid var(--border-color);
   display: flex;
   align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  background: var(--background-container);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
   transition: all 0.2s ease;
 }
 
-.donation-row:last-child {
-  margin-bottom: 0;
+.donation-row:hover {
+  border-color: var(--primary-color);
+  background: var(--background-alt);
 }
 
-.donation-row .recipient-col {
-  flex-grow: 1;
+/* Column widths */
+.recipient-col {
+  flex: 1 1 200px;
+}
+.amount-col {
+  flex: 0 0 80px;
+  text-align: left;
+}
+.message-col {
+  flex: 2 1 300px;
 }
 
-.donation-row .amount-col {
-  flex-shrink: 0;
-  width: 100px;
-  margin: 0 10px;
+/* Inputs */
+.donation-input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background: var(--background-container);
+  color: var(--text-dark);
+  transition: all 0.2s ease;
 }
 
-.donation-row .message-col {
-  flex-grow: 2;
+.donation-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.15);
+  outline: none;
 }
 
 .amount-input {
-  text-align: right;
+  width: 100px;
+  text-align: center;
 }
 
-/* Accent underline only for top level h3 */
-.donation-interface > h3::after {
-  content: "";
-  display: block;
-  width: 40px;
-  height: 4px;
-  background: linear-gradient(90deg, #f1c40f 0%, #e74c3c 100%);
-  border-radius: 2px;
-  margin: 8px 0 0 0;
+/* Dark mode tweaks */
+[data-theme="dark"] .donation-row {
+  background: var(--background-alt);
 }
 
-/* Add a subtle "Scroll for more" text */
-.donation-table::after {
-  content: "↕ Scroll to see more";
-  position: absolute;
-  right: 8px;
-  top: 8px;
-  font-size: 0.8em;
-  color: var(--text-light);
-  opacity: 0.8;
-  pointer-events: none;
-}
-
-/* Table header styling */
-.donation-table-header {
+[data-theme="dark"] .donation-row:hover {
   background: var(--background-container);
-  padding: 8px;
-  margin-bottom: 8px;
-  font-size: 0.9em;
+  border-color: var(--primary-color);
 }
 
-/* Adjust submit box spacing */
-.submit-box {
-  padding: 12px 0 0 0;
+[data-theme="dark"] .donation-input {
+  background: var(--background-container);
+  border-color: var(--border-color);
 }
 
-.submit-button {
-  max-width: 280px;
-  height: 44px;
-  font-size: 1em;
+[data-theme="dark"] .donation-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.15);
 }
 
-.recipient-info {
-  font-weight: 500;
-  color: var(--text-dark);
+/* Hide multiplier in dark mode */
+[data-theme="dark"] .multiplier {
+  display: none;
+}
+
+/* === CORNER BUTTONS === */
+.corner-btn {
+  position: fixed;
+  top: 28px;
+  z-index: 1200;
+  width: 64px;
+  height: 64px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
 }
-.multiplier {
-  font-size: 0.85em;
-  font-weight: 600;
+
+.corner-btn-left {
+  left: 36px;
+}
+
+.corner-btn-right {
+  right: 36px;
+}
+
+.corner-simple-btn {
+  width: 52px;
+  height: 52px;
+  background: var(--background-container);
   color: var(--primary-color);
-  background-color: var(--info-bg);
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.donation-inputs {
+  border: 2.5px solid var(--primary-color);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
   display: flex;
-  flex-direction: column; /* Stack inputs */
-  gap: 10px;
-  width: 100%;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  padding: 0;
+  margin: 0;
 }
 
-.donation-inputs input[type="number"],
-.donation-inputs input[type="text"] {
-  padding: 10px 12px; /* Slightly less padding */
-  font-size: 0.95rem;
+.corner-simple-btn:hover,
+.corner-simple-btn:focus {
+  background: var(--primary-color);
+  border-color: var(--primary-hover);
+  box-shadow: var(--shadow-md);
+  transform: scale(1.06);
 }
 
-.donation-inputs input[type="number"] {
-  width: 100px; /* Fixed width for amount */
-  text-align: center;
-}
-.message-input {
-  flex-grow: 1;
+.corner-simple-btn:active {
+  transform: scale(0.97);
 }
 
-/* Donation Summary & Received */
-.donations-summary,
-.received-donations {
-  margin: 25px 0;
+/* Dark mode tweaks */
+[data-theme="dark"] .corner-simple-btn {
+  background: var(--background-container);
+  border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .corner-simple-btn:hover,
+[data-theme="dark"] .corner-simple-btn:focus {
+  background: var(--primary-color);
+  border-color: var(--primary-hover);
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .corner-btn {
+    top: 16px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .corner-btn-left {
+    left: 16px;
+  }
+
+  .corner-btn-right {
+    right: 16px;
+  }
+
+  .corner-simple-btn {
+    width: 40px;
+    height: 40px;
+    border-width: 2px;
+  }
+}
+
+/* === HOW TO PLAY MODAL === */
+.howto-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(44, 62, 80, 0.25);
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
-  background-color: var(--background-alt); /* Use distinct light gray */
-  border-radius: var(--border-radius-md);
-  border: 1px solid var(--border-color);
-}
-.donations-summary h3,
-.received-donations h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: var(--text-dark);
-  font-size: 1.1em;
 }
 
-.donation-summary-item,
-.received-donation-item {
-  background: var(--white);
-  padding: 12px 15px;
-  margin-bottom: 10px;
-  border-radius: var(--border-radius-sm);
-  border: 1px solid #eee;
-  color: var(--text-dark) !important;
-}
-.donation-summary-item p,
-.received-donation-item p {
-  margin: 4px 0;
-  color: var(--text-dark);
-  font-size: 0.95rem;
-}
-.donation-message,
-.received-message {
-  color: var(--text-light);
-  font-style: italic;
-  margin-top: 8px;
-  font-size: 0.9em;
-  padding-left: 10px;
-  border-left: 3px solid var(--accent-color);
+.howto-modal-content {
+  background: var(--background-container);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 40px 32px;
+  max-width: 520px;
+  width: 100%;
+  position: relative;
+  border: 1px solid var(--border-color);
 }
 
-/* Waiting Screen */
-.waiting-screen {
-  background-color: var(--background-container);
-  padding: 30px 40px; /* Ensure good padding */
-  border-radius: var(--border-radius-md);
-  margin: 30px 0;
-  text-align: center;
-  border: 1px solid var(--border-color);
+.modern-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  background: linear-gradient(
+    90deg,
+    var(--accent-color) 0%,
+    var(--primary-color) 100%
+  );
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7em;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.modern-close-btn:hover {
+  background: linear-gradient(
+    90deg,
+    var(--primary-color) 0%,
+    var(--accent-color) 100%
+  );
+  transform: scale(1.07);
   box-shadow: var(--shadow-md);
 }
 
+.howto-modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 22px;
+  color: var(--primary-color);
+  font-size: 1.5em;
+  font-weight: 800;
+  text-align: center;
+}
+
+.howto-description {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.howto-description p {
+  margin-bottom: 16px;
+  color: var(--text-dark);
+  font-size: 1.08em;
+  line-height: 1.6;
+}
+
+.howto-description ul {
+  margin: 0 0 18px 18px;
+  padding: 0;
+  color: var(--text-dark);
+  font-size: 1.01em;
+  line-height: 1.5;
+}
+
+.howto-description li {
+  margin-bottom: 8px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .howto-modal-content {
+    max-width: 98vw;
+    padding: 24px 16px;
+    border-radius: var(--border-radius-sm);
+  }
+
+  .modern-close-btn {
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    font-size: 1.4em;
+  }
+}
+
+/* === DONATION INTERFACE - CLEAN VERSION === */
+
+/* === WAITING VIEW STYLES === */
+.waiting-screen {
+  background: var(--background-container);
+  padding: 30px 40px;
+  border-radius: var(--border-radius-md);
+  margin: 0 auto;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+}
+
 .player-status-section {
-  margin-top: 25px; /* Space above the section */
-  padding-top: 20px; /* Space above the list */
-  border-top: 1px solid var(--border-color); /* Separator line */
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
 }
 
 .player-status-section h4 {
-  text-align: center; /* Center the heading */
+  text-align: center;
   margin-bottom: 15px;
-  color: var(--text-light);
-  font-size: 1em; /* Match other headings */
+  color: var(--text-dark);
+  font-size: 1em;
   font-weight: 500;
-  color: var(--text-dark) !important;
 }
 
 .player-status-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 0;
+  margin: 0;
 }
 
 .player-status {
@@ -846,547 +993,45 @@ button:not(:disabled):hover {
   justify-content: space-between;
   align-items: center;
   text-align: left;
-  border: 1px solid transparent;
-  color: var(--text-dark) !important;
   background: var(--background-alt);
-  box-shadow: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-dark);
 }
 
 .player-status.ready {
-  background-color: var(--success-bg);
+  background: var(--success-bg);
   color: var(--success-text);
   border-color: var(--success-border);
 }
 
 .player-status.pending {
-  background-color: var(--danger-bg);
+  background: var(--danger-bg);
   color: var(--danger-text);
   border-color: var(--danger-border);
 }
 
-.process-button {
-  background-color: var(--accent-color); /* Use accent for process */
-  color: var(--white);
-  margin-top: 25px;
-}
-.process-button:not(:disabled):hover {
-  background-color: #3dcab0; /* Darker accent */
-}
-
-/* Game Over Screen */
-.game-result {
-  text-align: center;
-  margin: 25px 0;
-}
-
-.final-results {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 25px;
-  margin: 30px 0;
-}
-
-.player-result {
-  width: 180px; /* Wider cards */
-  padding: 20px;
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-md);
-  text-align: center;
-  border: 1px solid var(--border-color);
-}
-.player-result h3 {
-  margin-bottom: 10px;
-  font-size: 1.1em;
-}
-.player-result p {
-  margin: 5px 0;
-  font-weight: 500;
-}
-.player-result p:last-child {
-  font-size: 0.9em;
-  margin-top: 10px;
-}
-
-.player-result.success {
-  background-color: var(--success-bg);
-  border-left: 5px solid var(--success-text);
-}
-.player-result.success p:last-child {
-  color: var(--success-text);
-}
-
-.player-result.failure {
-  background-color: var(--danger-bg);
-  border-left: 5px solid var(--danger-text);
-}
-.player-result.failure p:last-child {
-  color: var(--danger-text);
-}
-
-/* === REMOVE OLD/REDUNDANT RULES === */
-/* Remove specific rules identified as duplicates or conflicts */
-/* e.g., remove the older body, .game-container, button styles */
-/* from lines 115-200 approx */
-
-/* Media Queries (Optional but recommended) */
-@media (min-width: 600px) {
-  .donation-row {
-    flex-direction: row; /* Switch back to row on larger screens */
-    align-items: center;
-  }
-  .donation-inputs {
-    flex-direction: row; /* Row layout for inputs */
-    width: auto; /* Allow inputs to determine width */
-  }
-}
-
-/* === LOBBY === */
-
-.debug-tools-container {
-  margin-top: 30px; /* Increased spacing */
-  padding-top: 20px;
-  border-top: 1px solid var(--border-color);
-  text-align: center; /* Center the heading */
-}
-
-.debug-tools-container h4 {
-  margin-bottom: 15px;
-  color: var(--text-light);
-  font-size: 0.9em;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.debug-buttons {
-  display: flex;
-  justify-content: center; /* Center buttons horizontally */
-  gap: 15px; /* Consistent gap */
-  flex-wrap: wrap; /* Allow wrapping on very small screens if necessary */
-}
-
-.button-debug {
-  /* Add specific styles for debug buttons if needed */
-  /* Example: slightly smaller padding? */
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  /* Keep unique background colors via inline styles or specific classes */
-}
-
-/* New styles for table-like donation layout */
-.donation-table {
-  display: flex;
-  flex-direction: column;
-  margin-top: 15px;
-}
-
-.donation-table-header {
-  display: none; /* Hide header on mobile */
-  font-weight: 600;
-  padding: 10px 0;
-  margin-bottom: 5px;
-  border-bottom: 2px solid var(--border-color);
-  color: var(--text-light);
-  font-size: 0.9em;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.donation-row {
-  display: flex;
-  flex-direction: column; /* Stack on mobile */
-  gap: 10px; /* Gap for mobile stacking */
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid var(--border-color);
-}
-.donation-row:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-.recipient-col,
-.amount-col,
-.message-col {
-  display: flex;
-  align-items: center; /* Vertically align items in columns */
-  gap: 10px; /* Gap between label/input */
-}
-
-.recipient-col {
-  font-weight: 600;
-  /* Add some spacing if needed */
-}
-
-.multiplier {
-  font-size: 0.85em;
-  font-weight: 600;
-  color: var(--primary-color);
-  background-color: var(--info-bg);
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-left: 5px; /* Space it from name */
-}
-
-.donation-input {
-  padding: 10px 12px;
-  font-size: 0.95rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-sm);
-  background-color: var(--white);
-}
-
-.amount-input {
-  width: 120px; /* Larger amount input */
-  text-align: center;
-}
-
-.message-input {
-  flex-grow: 1; /* Allow message to take space */
-  width: 100%; /* Full width when stacked */
-}
-
-/* Desktop layout for donation table */
-@media (min-width: 768px) {
-  .donation-table-header {
-    display: flex;
-    gap: 15px;
-    padding: 10px 15px; /* Add padding to header */
-    margin-bottom: 10px; /* Space below header */
-    /* Ensure alignment matches columns below */
-  }
-  .donation-row {
-    flex-direction: row;
-    gap: 15px;
-    align-items: center;
-    padding: 15px; /* Add padding to rows */
-    border-bottom: 1px solid var(--border-color); /* Keep row separator */
-  }
-  .donation-row:last-child {
-    border-bottom: none;
-  }
-  /* Hover effect for rows */
-  .donation-row:hover {
-    background-color: rgba(
-      74,
-      144,
-      226,
-      0.03
-    ); /* Very subtle primary tint on hover */
-  }
-
-  .recipient-col {
-    flex-basis: 25%;
-    flex-grow: 0;
-    flex-shrink: 0;
-    font-weight: 500;
-    padding-left: 0; /* Remove extra padding if header has it */
-  }
-  .amount-col {
-    flex-basis: 130px; /* Slightly wider */
-    flex-grow: 0;
-    flex-shrink: 0;
-    justify-content: center;
-  }
-  .message-col {
-    flex-basis: 0;
-    flex-grow: 1;
-    padding-right: 0; /* Remove extra padding if header has it */
-  }
-  .donation-table-header .recipient-col,
-  .donation-table-header .amount-col,
-  .donation-table-header .message-col {
-    padding: 0; /* Reset padding just for header cols if needed */
-    display: flex; /* Ensure flex alignment in header */
-    align-items: center;
-  }
-  .donation-table-header .amount-col {
-    justify-content: center; /* Center header text too */
-  }
-
-  .amount-input {
-    width: 100%;
-  }
-  .message-input {
-    width: 100%;
-  }
-}
-
-/* === SETUP SCREEN SPECIFIC === */
-.or-divider {
-  text-align: center;
-  margin: 30px 0; /* More space around OR */
-  color: var(--text-light);
-  font-weight: 500;
-  font-size: 0.9em;
-  text-transform: uppercase;
-  position: relative;
-  display: block; /* Ensure it takes full width for lines */
-}
-
-/* Add lines to the OR divider */
-.or-divider::before,
-.or-divider::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 35%; /* Adjust width of lines */
-  height: 1px;
-  background-color: var(--border-color);
-}
-
-.or-divider::before {
-  left: 10%; /* Adjust position */
-}
-
-.or-divider::after {
-  right: 10%; /* Adjust position */
-}
-
-.setup-section .form-group label {
-  /* Optional: Center label text if input is centered */
-  /* text-align: center; */
-}
-
-.setup-section .button-primary {
-  margin-top: 10px; /* Add some space above create button */
-}
-
-/* === JOIN SCREEN SPECIFIC === */
-.join-section h2 {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-/* Add specific styles for back/join buttons if needed */
-.join-section .button-secondary {
-  /* Back button */
-  flex: 1;
-}
-.join-section .button-primary {
-  /* Join button */
-  flex: 2;
-}
-
-/* === MEDIA QUERIES === */
-
-/* Styles for smaller screens (Mobile focus) */
-@media (max-width: 900px) {
-  .setup-section,
-  .join-section,
-  .lobby-container,
-  .playing-container,
-  .gameover-container {
-    max-width: 98vw;
-    min-width: 0;
-    width: 98vw;
-    max-height: 90vh; /* Reduce height for mobile as well */
-    margin: 0 0 2vh 0; /* Add margin-bottom for spacing */
-    padding: 24px 16px;
-    border-radius: 18px;
-  }
-
-  h1 {
-    font-size: 1.7em;
-    margin-bottom: 16px;
-  }
-
-  .game-header {
-    margin-bottom: 16px;
-    padding: 12px;
-  }
-
-  .player-info,
-  .received-donations,
-  .donation-interface {
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-
-  .donation-row {
-    padding: 12px;
-    margin-bottom: 12px;
-  }
-
-  .player-status-section {
-    margin-top: 16px;
-    padding-top: 16px;
-  }
-
-  .player-status-list {
-    gap: 8px;
-  }
-
-  .player-status {
-    padding: 8px 12px;
-  }
-
-  button,
-  .corner-simple-btn {
-    max-width: 98vw;
-    height: 48px;
-    font-size: 1.1em;
-    border-radius: 22px;
-    padding: 0 12px;
-    margin: 12px auto;
-  }
-  .form-group input[type="text"],
-  .form-group input[type="number"] {
-    font-size: 1em;
-    padding: 14px 12px;
-  }
-}
-
-/* === HOW TO PLAY FLOATING BUTTON (SIMPLE ICON) === */
-.howto-float-btn {
-  position: fixed;
-  top: 28px;
-  right: 32px;
-  z-index: 1100;
-  background: var(--white);
-  color: var(--primary-color);
-  border: 2.5px solid var(--primary-color);
-  border-radius: 50%;
-  width: 52px;
-  height: 52px;
-  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.13);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s,
-    transform 0.1s;
-  outline: none;
-}
-.howto-float-icon {
-  font-size: 2.1em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.howto-float-btn:active {
-  transform: scale(0.97);
-}
-.howto-float-btn:focus {
-  border-color: var(--secondary-color);
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
-}
-.howto-float-btn:hover,
-.howto-float-btn:focus {
-  background: var(--primary-color);
-  border-color: var(--primary-hover);
-  box-shadow: 0 6px 24px rgba(231, 76, 60, 0.18),
-    0 0 0 4px rgba(231, 76, 60, 0.1);
-  transform: scale(1.06);
-}
-@media (max-width: 600px) {
-  .howto-float-btn {
-    top: 8px;
-    right: 8px;
-    width: 40px;
-    height: 40px;
-    border-width: 2px;
-  }
-  .howto-float-icon {
-    font-size: 1.5em;
-  }
-}
-
-.howto-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(44, 62, 80, 0.25);
-  z-index: 1200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.howto-modal-content {
+/* Dark mode */
+[data-theme="dark"] .waiting-screen {
   background: var(--background-container);
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-md);
-  padding: 44px 38px 36px 38px;
-  max-width: 520px;
-  width: 100%;
-  position: relative;
-  text-align: left;
-  border: 1px solid var(--border-color);
-}
-.howto-modal-close {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  color: var(--text-light);
-  cursor: pointer;
-  z-index: 1;
-  padding: 0 8px;
-  line-height: 1;
-}
-.howto-modal-content h2 {
-  margin-top: 0;
-  margin-bottom: 18px;
-  color: var(--primary-color);
-  font-size: 1.4em;
-  text-align: center;
-}
-.howto-list {
-  padding-left: 18px;
-  margin-bottom: 18px;
-  color: var(--text-dark);
-  font-size: 1.05em;
-}
-.howto-note {
-  color: var(--text-light);
-  font-size: 0.97em;
-  margin-top: 10px;
-  text-align: center;
-}
-@media (max-width: 600px) {
-  .howto-modal-content {
-    max-width: 98vw;
-    padding: 24px 6px 18px 6px;
-  }
-  .howto-modal-close {
-    top: 8px;
-    right: 8px;
-    font-size: 1.5rem;
-  }
+  border-color: var(--border-color);
 }
 
-.howto-description {
-  margin-top: 10px;
-  margin-bottom: 0;
-}
-.howto-description p {
-  margin-bottom: 16px;
+[data-theme="dark"] .player-status {
+  background: var(--background-container);
+  border-color: var(--border-color);
   color: var(--text-dark);
-  font-size: 1.08em;
-  line-height: 1.6;
 }
-.howto-description ul {
-  margin: 0 0 18px 18px;
-  padding: 0;
-  color: var(--text-dark);
-  font-size: 1.01em;
-  line-height: 1.5;
+
+[data-theme="dark"] .player-status.ready {
+  background: linear-gradient(135deg, #2e7d32 0%, #388e3c 100%);
+  color: #fff;
+  border-color: #4caf50;
 }
-.howto-description li {
-  margin-bottom: 8px;
-}
-.howto-inspiration {
-  color: var(--secondary-color);
-  font-size: 0.98em;
-  margin-top: 10px;
-  text-align: left;
-  font-style: italic;
+
+[data-theme="dark"] .player-status.pending {
+  background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
+  color: #fff;
+  border-color: #f44336;
 }
 
 /* === SPLASH SCREEN === */
@@ -1407,11 +1052,13 @@ button:not(:disabled):hover {
   transition: opacity 0.5s;
   opacity: 1;
 }
+
 .splash-fadeout {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s;
 }
+
 .splash-content {
   text-align: center;
   background: var(--background-container);
@@ -1421,11 +1068,13 @@ button:not(:disabled):hover {
   border: 1.5px solid var(--border-color);
   animation: splashPopIn 0.7s cubic-bezier(0.23, 1.12, 0.62, 1.01);
 }
+
 .splash-logo {
   font-size: 3.2rem;
   margin-bottom: 18px;
   filter: drop-shadow(0 2px 8px #f1c40f55);
 }
+
 .splash-title {
   font-size: 2.2rem;
   font-weight: 800;
@@ -1433,6 +1082,7 @@ button:not(:disabled):hover {
   margin-bottom: 10px;
   letter-spacing: 1.5px;
 }
+
 .splash-tagline {
   font-size: 1.15rem;
   color: var(--secondary-color);
@@ -1440,6 +1090,7 @@ button:not(:disabled):hover {
   letter-spacing: 0.5px;
   margin-bottom: 0;
 }
+
 @keyframes splashFadeIn {
   from {
     opacity: 0;
@@ -1448,6 +1099,7 @@ button:not(:disabled):hover {
     opacity: 1;
   }
 }
+
 @keyframes splashPopIn {
   0% {
     transform: scale(0.92) translateY(30px);
@@ -1463,83 +1115,7 @@ button:not(:disabled):hover {
   }
 }
 
-/* === POLISH MODAL & BUTTONS === */
-.howto-modal-content {
-  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.13);
-  border-radius: 16px;
-  border-width: 1.5px;
-  padding: 40px 32px 32px 32px;
-}
-.howto-modal-close {
-  font-size: 2.1rem;
-  color: var(--secondary-color);
-  top: 18px;
-  right: 20px;
-  transition: color 0.2s;
-}
-.howto-modal-close:hover {
-  color: var(--primary-color);
-}
-.howto-modal-content h2 {
-  font-size: 1.5em;
-  font-weight: 800;
-  color: var(--primary-color);
-  margin-bottom: 22px;
-}
-.howto-description p,
-.howto-description ul {
-  font-size: 1.09em;
-}
-.howto-description ul {
-  margin-bottom: 20px;
-}
-.howto-inspiration {
-  font-size: 1.01em;
-  color: var(--secondary-color);
-  font-weight: 600;
-}
-.howto-float-btn {
-  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.13);
-  border-radius: 50%;
-  font-weight: 800;
-  border-width: 2.5px;
-  background: var(--white);
-  color: var(--primary-color);
-  transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
-}
-.howto-float-btn:hover,
-.howto-float-btn:focus {
-  background: var(--primary-color);
-  border-color: var(--primary-hover);
-  box-shadow: 0 6px 24px rgba(231, 76, 60, 0.18),
-    0 0 0 4px rgba(231, 76, 60, 0.1);
-  transform: scale(1.06);
-}
-.howto-float-icon svg {
-  display: block;
-  width: 2em;
-  height: 2em;
-  color: var(--primary-color);
-  transition: color 0.2s, background 0.2s, filter 0.2s;
-  filter: drop-shadow(0 2px 6px rgba(231, 76, 60, 0.08));
-}
-.howto-float-icon svg rect {
-  fill: var(--primary-color) !important;
-  transition: fill 0.2s;
-}
-.howto-float-btn:hover .howto-float-icon svg rect,
-.howto-float-btn:focus .howto-float-icon svg rect {
-  fill: var(--accent-color) !important;
-}
-.howto-float-btn:hover .howto-float-icon svg circle,
-.howto-float-btn:focus .howto-float-icon svg circle {
-  stroke: #fff;
-  fill: var(--primary-color);
-}
-.howto-float-btn:focus .howto-float-icon svg,
-.howto-float-btn:hover .howto-float-icon svg {
-  filter: drop-shadow(0 0 8px #fff8) drop-shadow(0 2px 8px #e74c3c55);
-}
+/* Responsive adjustments */
 @media (max-width: 600px) {
   .splash-content {
     padding: 32px 10px 24px 10px;
@@ -1551,282 +1127,9 @@ button:not(:disabled):hover {
   .splash-logo {
     font-size: 2.1rem;
   }
-  .howto-modal-content {
-    padding: 24px 6px 18px 6px;
-    border-radius: 10px;
-  }
 }
 
-/* Corner button shared styles */
-.corner-btn {
-  position: fixed;
-  top: 28px;
-  z-index: 1200;
-  width: 64px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.corner-btn-left {
-  left: 36px;
-}
-.corner-btn-right {
-  right: 36px;
-}
-.theme-toggle,
-.howto-float-btn {
-  width: 52px;
-  height: 52px;
-  background: #fff;
-  color: var(--primary-color);
-  border: 2.5px solid var(--primary-color);
-  border-radius: 50%;
-  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.13);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s,
-    transform 0.1s;
-  outline: none;
-  padding: 0;
-  margin: 0;
-  position: static !important;
-  font-size: unset;
-}
-.theme-toggle:active,
-.howto-float-btn:active {
-  transform: scale(0.97);
-}
-.theme-toggle:focus,
-.howto-float-btn:focus {
-  border-color: var(--secondary-color);
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
-}
-.theme-toggle:hover,
-.theme-toggle:focus,
-.howto-float-btn:hover,
-.howto-float-btn:focus {
-  background: var(--primary-color);
-  border-color: var(--primary-hover);
-  box-shadow: 0 6px 24px rgba(231, 76, 60, 0.18),
-    0 0 0 4px rgba(231, 76, 60, 0.1);
-  color: #fff;
-  transform: scale(1.06);
-}
-.theme-toggle svg {
-  width: 28px;
-  height: 28px;
-  display: block;
-}
-@media (max-width: 600px) {
-  .corner-btn {
-    top: 8px;
-    width: 40px;
-    height: 40px;
-  }
-  .corner-btn-left {
-    left: 8px;
-  }
-  .corner-btn-right {
-    right: 8px;
-  }
-  .theme-toggle,
-  .howto-float-btn {
-    width: 40px;
-    height: 40px;
-    border-width: 2px;
-  }
-  .theme-toggle svg {
-    width: 20px;
-    height: 20px;
-  }
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.setup-section,
-.join-section,
-.lobby-container,
-.playing-container,
-.gameover-container {
-  animation: fadeIn 0.5s ease-out;
-}
-
-.corner-simple-btn {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  border: 2.5px solid #e74c3c;
-  background: #fff;
-  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.13);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  margin: 0;
-  outline: none;
-  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s,
-    transform 0.1s;
-}
-.corner-simple-btn:active {
-  transform: scale(0.97);
-}
-.corner-simple-btn:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
-}
-.corner-simple-btn:hover,
-.corner-simple-btn:focus {
-  background: #e74c3c;
-  border-color: #c0392b;
-  box-shadow: 0 6px 24px rgba(231, 76, 60, 0.18),
-    0 0 0 4px rgba(231, 76, 60, 0.1);
-  color: #fff;
-  transform: scale(1.06);
-}
-
-/* Accent underline for headings */
-h2::after,
-h3::after {
-  content: "";
-  display: block;
-  width: 40px;
-  height: 4px;
-  background: linear-gradient(90deg, #f1c40f 0%, #e74c3c 100%);
-  border-radius: 2px;
-  margin: 8px auto 0 auto;
-}
-
-[data-theme="dark"] .player-item {
+[data-theme="dark"] .received-message-row {
   background: #23262f;
-  color: var(--text-dark);
-}
-
-.instruction-text,
-.lobby-container p,
-.setup-section p,
-.join-section p {
-  color: var(--text-light) !important;
-}
-
-/* === PLAYERS MODAL === */
-.players-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(44, 62, 80, 0.25);
-  z-index: 3000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.players-modal {
-  background: var(--background-container);
-  border-radius: 18px;
-  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18);
-  padding: 36px 28px 28px 28px;
-  max-width: 400px;
-  width: 100%;
-  max-height: 80vh;
-  overflow-y: auto;
-  position: relative;
-  border: 1.5px solid var(--border-color);
-  animation: splashPopIn 0.5s cubic-bezier(0.23, 1.12, 0.62, 1.01);
-}
-.players-modal-close {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  color: var(--text-light);
-  cursor: pointer;
-  z-index: 1;
-  padding: 0 8px;
-  line-height: 1;
-  transition: color 0.2s;
-}
-.players-modal-close:hover {
-  color: var(--primary-color);
-}
-.players-modal h2 {
-  margin-top: 0;
-  margin-bottom: 18px;
-  color: var(--primary-color);
-  font-size: 1.3em;
-  text-align: center;
-}
-.players-modal-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-.players-modal-item {
-  background: var(--background-alt);
-  border-radius: 10px;
-  padding: 16px 14px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
-  margin-bottom: 0;
-  color: var(--text-dark);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 1.05em;
-  position: relative;
-}
-.players-modal-item .host-tag,
-.players-modal-item .you-tag {
-  display: inline-block;
-  margin-left: 8px;
-  font-size: 0.85em;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.players-modal-item .host-tag {
-  background: var(--primary-color);
-  color: var(--white);
-}
-.players-modal-item .you-tag {
-  background: #ff9800;
-  color: #181a20;
-}
-@media (max-width: 600px) {
-  .players-modal {
-    max-width: 98vw;
-    padding: 18px 4px 12px 4px;
-    border-radius: 10px;
-  }
-  .players-modal-close {
-    top: 6px;
-    right: 8px;
-    font-size: 1.5rem;
-  }
-}
-
-/* Remove the player-turn-indicator styles since we're not using it anymore */
-.player-turn-indicator {
-  display: none;
+  border-color: var(--border-color);
 }

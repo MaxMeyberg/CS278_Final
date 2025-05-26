@@ -1,0 +1,98 @@
+/* === BASE STYLES === */
+
+html,
+body,
+#root {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden; /* Prevent scrolling at root level */
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  font-family: "Inter", "Baloo 2", "Fredoka", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--background-body);
+  background-size: 200% 200%;
+  animation: bgMove 8s ease-in-out infinite;
+  color: var(--text-dark);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  overflow: hidden; /* Prevent scrolling */
+}
+
+@keyframes bgMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.game-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  flex-direction: column;
+  background: none;
+  color: var(--text-dark);
+  padding: 20px;
+  overflow: hidden;
+}
+
+/* === TYPOGRAPHY === */
+h1,
+h2,
+h3 {
+  color: var(--primary-color);
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-weight: 600;
+  text-shadow: 0 2px 12px #ff6b6b33, 0 1px 0 #23262f;
+}
+
+h1 {
+  font-family: "Fredoka", "Baloo 2", "Inter", sans-serif;
+  font-size: 1.7em;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: var(--primary-color);
+  text-shadow: 0 2px 12px #ff6b6b33, 0 1px 0 #23262f;
+  margin-bottom: 12px; /* Reduced for mobile */
+  transition: color 0.3s;
+}
+
+h2 {
+  font-size: 1.4em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+  margin-bottom: 25px;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+h3 {
+  font-size: 1.15em;
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+
+p {
+  margin-bottom: 1rem;
+  color: var(--text-light);
+}

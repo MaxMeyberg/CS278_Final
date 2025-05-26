@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   createGame,
   joinGame,
@@ -12,7 +12,7 @@ import {
   debugDatabase,
 } from "./firebase";
 import { ref, set, get, getDatabase } from "firebase/database";
-import "./App.css";
+import "./styles/index.css";
 
 // Import the new component
 import SetupScreen from "./components/SetupScreen";
@@ -21,6 +21,7 @@ import PlayingScreen from "./components/PlayingScreen";
 import HowToPlayModal from "./components/HowToPlayModal";
 import ThemeToggle from "./components/ThemeToggle";
 import CornerButtons from "./components/CornerButtons";
+import GameOverPlayersList from "./components/GameOverPlayersList";
 
 function App() {
   // Game state
@@ -38,6 +39,10 @@ function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [splashFading, setSplashFading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Track last initialized round and ready state
+  const lastInitRoundRef = useRef(null);
+  const lastReadyRef = useRef(null);
 
   // Theme toggle handler
   const handleThemeToggle = () => {
@@ -121,23 +126,34 @@ function App() {
   // Initialize donations when entering game
   useEffect(() => {
     if (gameState === "playing" && gameData && playerName) {
-      // Find the player object by name instead of using the key directly
       const playerObj = Object.values(gameData.players).find(
         (p) => p.name === playerName
       );
-
-      if (playerObj && !playerObj.ready) {
-        const newDonations = {};
-
-        Object.values(gameData.players).forEach((player) => {
-          if (player.name !== playerName) {
-            newDonations[player.name] = { amount: 0, message: "" };
-          }
-        });
-
-        setCurrentDonations(newDonations);
+      const currentRound = gameData.day;
+      const isReady = playerObj?.ready;
+      // Only initialize if:
+      // - round changed, or
+      // - player was ready and is now not ready (new round), or
+      // - currentDonations is empty (first load)
+      if (
+        (!isReady && lastReadyRef.current === true) ||
+        lastInitRoundRef.current !== currentRound ||
+        Object.keys(currentDonations).length === 0
+      ) {
+        if (playerObj && !playerObj.ready) {
+          const newDonations = {};
+          Object.values(gameData.players).forEach((player) => {
+            if (player.name !== playerName) {
+              newDonations[player.name] = { amount: 0, message: "" };
+            }
+          });
+          setCurrentDonations(newDonations);
+          lastInitRoundRef.current = currentRound;
+        }
       }
+      lastReadyRef.current = isReady;
     }
+    // eslint-disable-next-line
   }, [gameState, gameData, playerName]);
 
   // Create a new game
@@ -602,22 +618,11 @@ function App() {
               : "Not everyone reached the goal of $1000."}
           </p>
 
-          <div className="final-results">
-            {Object.entries(gameData.players).map(([name, player]) => (
-              <div
-                key={name}
-                className={`player-result ${
-                  player.money >= 1000 ? "success" : "failure"
-                }`}
-              >
-                <h3>{player.name}</h3>
-                <p>${player.money}</p>
-                <p>
-                  {player.money >= 1000 ? "✅ Goal reached" : "❌ Below goal"}
-                </p>
-              </div>
-            ))}
-          </div>
+          <GameOverPlayersList
+            players={gameData.players}
+            targetAmount={1000}
+            maxInitialDisplay={2}
+          />
         </div>
 
         <button

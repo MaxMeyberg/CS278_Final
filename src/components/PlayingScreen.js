@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import PlayerStatusList from "./PlayerStatusList";
+import ReceivedMessagesList from "./ReceivedMessagesList";
+import DonationRecipientsList from "./DonationRecipientsList";
 
 // Helper function to get the current player object (can be moved or kept here)
 const getPlayerObject = (gameData, playerName) => {
@@ -19,7 +22,6 @@ function PlayingScreen({
   handleProcessDonations,
   getReceivedDonations, // Pass the helper function as a prop
 }) {
-  const [showPlayersModal, setShowPlayersModal] = useState(false);
   const playerObj = getPlayerObject(gameData, playerName);
   const day = gameData?.day || 1;
 
@@ -77,58 +79,11 @@ function PlayingScreen({
   if (playerObj.ready) {
     return (
       <div className="playing-container waiting-view">
-        {" "}
-        {/* Add specific class */}
         <h1>Day {day} - Waiting for Others</h1>
         <div className="waiting-screen">
-          {" "}
-          {/* Re-use existing class for styling */}
           <p>You've submitted your donations. Waiting for other players...</p>
-          {/* Your Donations Summary */}
-          <div className="donations-summary">
-            <h3>Your Donations:</h3>
-            {Object.entries(currentDonations).map(
-              ([recipient, data]) =>
-                data.amount > 0 && (
-                  <div key={recipient} className="donation-summary-item">
-                    <p>
-                      To {recipient}: ${data.amount}
-                    </p>
-                    {data.message && (
-                      <p className="donation-message">"{data.message}"</p>
-                    )}
-                  </div>
-                )
-            )}
-            {Object.values(currentDonations).every((d) => d.amount === 0) && (
-              <p>
-                <i>No donations made this round.</i>
-              </p>
-            )}
-          </div>
-          {/* Player Readiness Status - Updated Structure */}
-          <div className="player-status-section">
-            {" "}
-            {/* Added wrapper */}
-            <h4>Player Status:</h4>
-            <div className="player-status-list">
-              {Object.values(gameData.players).map((player) => (
-                <div
-                  key={player.name}
-                  className={`player-status ${
-                    player.ready ? "ready" : "pending"
-                  }`}
-                >
-                  <span className="player-name">{player.name}:</span>{" "}
-                  {/* Separate name */}
-                  <span className="status-text">
-                    {player.ready ? "Ready ✓" : "Deciding..."}
-                  </span>{" "}
-                  {/* Separate status */}
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Player Readiness Status */}
+          <PlayerStatusList players={gameData.players} maxInitialDisplay={2} />
           {/* Process Donations Button (Host Only) */}
           {gameData.host === playerName &&
             Object.values(gameData.players).every((p) => p.ready) && (
@@ -153,6 +108,52 @@ function PlayingScreen({
     (p) => p.name !== playerName
   );
 
+  // Logic for received messages
+  const MAX_INITIAL_MESSAGES = 1;
+  const allReceivedDonations =
+    day > 1
+      ? getReceivedDonations(gameData, day - 1, playerName)
+          .slice()
+          .sort((a, b) => b.amount - a.amount)
+      : [];
+  const initialMessagesToDisplay = allReceivedDonations.slice(
+    0,
+    MAX_INITIAL_MESSAGES
+  );
+  const hasMoreMessages = allReceivedDonations.length > MAX_INITIAL_MESSAGES;
+
+  // DEBUG: Log the received messages logic
+  console.log("[PlayingScreen] DEBUG - Received Messages Logic:");
+  console.log("  - allReceivedDonations.length:", allReceivedDonations.length);
+  console.log(
+    "  - MAX_INITIAL_MESSAGES (top message only):",
+    MAX_INITIAL_MESSAGES
+  );
+  console.log("  - hasMoreMessages:", hasMoreMessages);
+  console.log(
+    "  - initialMessagesToDisplay.length:",
+    initialMessagesToDisplay.length
+  );
+  console.log(
+    "  - Top message (highest donation):",
+    allReceivedDonations[0] || "None"
+  );
+  console.log("  - allReceivedDonations:", allReceivedDonations);
+
+  // Logic for donation recipients
+  const MAX_INITIAL_RECIPIENTS = 2;
+  const initialRecipientsToDisplay = otherPlayers.slice(
+    0,
+    MAX_INITIAL_RECIPIENTS
+  );
+  const hasMoreRecipients = otherPlayers.length > MAX_INITIAL_RECIPIENTS;
+
+  // DEBUG: Log the donation players logic
+  console.log("[PlayingScreen] DEBUG - Donation Players Logic:");
+  console.log("  - otherPlayers.length:", otherPlayers.length);
+  console.log("  - MAX_INITIAL_RECIPIENTS:", MAX_INITIAL_RECIPIENTS);
+  console.log("  - hasMoreRecipients:", hasMoreRecipients);
+
   return (
     <div className="playing-container donating-view">
       <div className="game-header">
@@ -161,7 +162,7 @@ function PlayingScreen({
       {error && <div className="error-message">{error}</div>}
       {/* Player Info Box */}
       <div className="player-info">
-        <h2>{playerName}</h2>
+        <h2 className="box-header">{playerName}</h2>
         <div className="player-stats">
           <p>
             Your Balance: <span className="value">${playerObj.money}</span>
@@ -172,56 +173,21 @@ function PlayingScreen({
           </p>
         </div>
       </div>
+      {/* Received Messages Section */}
+      {day > 1 && (
+        <ReceivedMessagesList
+          messages={allReceivedDonations}
+          maxInitialDisplay={1}
+        />
+      )}
       {/* Donation Interface */}
-      <div className="donation-interface">
-        <h3>Donate to Others (Gets Tripled!)</h3>
-        <div className="donation-table">
-          <div className="donation-table-header">
-            <div className="recipient-col">Recipient</div>
-            <div className="amount-col">Amount ($)</div>
-            <div className="message-col">Message (Optional)</div>
-          </div>
-          <div className="donation-rows">
-            {otherPlayers.map((player) => (
-              <div key={player.name} className="donation-row">
-                <div className="recipient-col">
-                  <span className="recipient-name">{player.name}</span>
-                  <span className="multiplier">3×</span>
-                </div>
-                <div className="amount-col">
-                  <input
-                    type="number"
-                    min="0"
-                    max={playerObj.money}
-                    value={currentDonations[player.name]?.amount || ""}
-                    onChange={(e) =>
-                      handleDonationChange(player.name, e.target.value)
-                    }
-                    className="donation-input amount-input"
-                    placeholder="0"
-                  />
-                </div>
-                <div className="message-col">
-                  <input
-                    type="text"
-                    value={currentDonations[player.name]?.message || ""}
-                    onChange={(e) =>
-                      handleDonationChange(
-                        player.name,
-                        currentDonations[player.name]?.amount || 0,
-                        e.target.value
-                      )
-                    }
-                    className="donation-input message-input"
-                    placeholder="Add a message..."
-                    maxLength={50}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <DonationRecipientsList
+        recipients={otherPlayers}
+        currentDonations={currentDonations}
+        handleDonationChange={handleDonationChange}
+        maxInitialDisplay={1}
+        maxAmount={playerObj.money}
+      />
 
       {/* Submit Box - Separate from donation interface */}
       <div className="submit-box">

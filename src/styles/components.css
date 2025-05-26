@@ -1,0 +1,426 @@
+/* === CONTENT SECTIONS === */
+.setup-section,
+.join-section,
+.lobby-container,
+.playing-container,
+.gameover-container {
+  background: var(--background-container);
+  border-radius: 32px;
+  box-shadow: var(--shadow-md);
+  border: 4px solid var(--primary-color);
+  max-width: 900px;
+  min-width: 340px;
+  width: 80vw;
+  height: 85vh; /* Fixed height instead of max-height */
+  margin: 0 auto 2vh auto; /* Add margin-bottom for spacing */
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Start from top */
+  align-items: center;
+  transition: box-shadow 0.3s, border-color 0.3s, background 0.3s;
+  overflow: hidden !important; /* Prevent scrolling in main container */
+}
+
+.playing-container {
+  gap: 16px; /* Consistent spacing between elements for playing screen */
+  padding: 24px; /* Smaller padding for playing screen */
+  overflow: hidden !important; /* Remove scrolling from main container */
+}
+
+/* === MODAL STYLES === */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(44, 62, 80, 0.5);
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-content {
+  background: var(--background-container);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 32px 24px;
+  max-width: 800px;
+  width: 90%;
+  position: relative;
+  border: 1px solid var(--border-color);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--primary-color);
+  font-size: 1.3em;
+  font-weight: 700;
+  text-align: center;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+  margin: 0;
+  padding: 0;
+  min-width: 36px;
+}
+
+.modal-close-btn:hover {
+  background: var(--primary-hover);
+  transform: scale(1.05);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Specific modal styles */
+.received-messages-modal .received-messages-table {
+  margin-top: 0;
+}
+
+.received-messages-modal .received-messages-rows {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.donation-recipients-modal .donation-rows {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* Dark mode for modal */
+[data-theme="dark"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .modal-content {
+  background: var(--background-container);
+  border-color: var(--border-color);
+}
+
+/* === BUTTONS === */
+button,
+.corner-simple-btn {
+  min-width: 0;
+  width: 100%;
+  max-width: 340px;
+  height: 56px;
+  border-radius: 32px;
+  font-size: 1.25em;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: linear-gradient(
+    90deg,
+    var(--accent-color) 0%,
+    var(--primary-color) 100%
+  );
+  color: #fff;
+  border: none;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.1s, color 0.2s;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  margin: 18px auto;
+  padding: 0 32px;
+}
+
+button:disabled,
+.corner-simple-btn:disabled {
+  background: #444a5a;
+  color: #bfc2cf;
+  opacity: 0.7;
+}
+
+button:active,
+.corner-simple-btn:active {
+  animation: btnBounce 0.18s;
+  box-shadow: 0 2px 8px #e74c3c44;
+}
+
+@keyframes btnBounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.93);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+button:hover,
+.corner-simple-btn:hover {
+  box-shadow: 0 0 16px 4px #f1c40f66, 0 6px 24px #e74c3c22;
+  background: linear-gradient(90deg, #e74c3c 0%, #f1c40f 100%);
+  color: #fff;
+}
+
+/* Primary Button (Red) */
+.button-primary,
+.start-game-button,
+.submit-button {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--white);
+  box-shadow: var(--shadow-sm);
+}
+
+.button-primary:not(:disabled):hover,
+.start-game-button:not(:disabled):hover,
+.submit-button:not(:disabled):hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* Secondary Button (Blue - Default) */
+.button-secondary,
+.join-button,
+.restart-button,
+button {
+  /* Default button style if no class */
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: var(--white); /* White text on blue */
+  box-shadow: var(--shadow-sm);
+}
+
+.button-secondary:not(:disabled):hover,
+.join-button:not(:disabled):hover,
+.restart-button:not(:disabled):hover,
+button:not(:disabled):hover {
+  background-color: var(--secondary-hover);
+  border-color: var(--secondary-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* Accent Button (Example usage if needed, maybe for debug?) */
+.button-accent {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--text-dark);
+}
+.button-accent:not(:disabled):hover {
+  background-color: #dab10d; /* Darker yellow */
+  border-color: #dab10d;
+}
+
+/* Full width button utility */
+.button-full-width {
+  display: block;
+  width: 100%;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+/* Link-style button */
+.button-link {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin: 0;
+  min-width: auto;
+  width: auto;
+  height: auto;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.button-link:hover {
+  background: var(--primary-color);
+  color: var(--white);
+  text-decoration: none;
+  box-shadow: none;
+  transform: none;
+}
+
+.button-link[disabled] {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* === FORMS === */
+.form-group {
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"] {
+  width: 100%;
+  padding: 20px 24px;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 1.25em;
+  transition: all var(--transition-speed) ease;
+  background-color: var(--background-container);
+  color: var(--text-dark);
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus {
+  border-color: var(--primary-color);
+  /* Use a slightly softer focus ring based on primary color */
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15); /* Red focus ring */
+  outline: none;
+}
+
+/* Input invalid state - override default browser red border/shadow */
+/* This might apply if the input has validation attributes like required */
+.form-group input:invalid {
+  border-color: var(--border-color);
+  box-shadow: none;
+}
+
+/* === MESSAGES === */
+.error-message {
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+  border: 1px solid var(--danger-border);
+  padding: 15px 20px;
+  border-radius: var(--border-radius-sm);
+  margin: 20px 0;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.waiting-message {
+  text-align: center;
+  margin: 25px 0;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Box header styling */
+.box-header {
+  font-size: 1.15em;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: 0.2px;
+}
+
+.box-header::after {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 4px;
+  background: linear-gradient(90deg, #f1c40f 0%, #e74c3c 100%);
+  border-radius: 2px;
+  margin-left: 8px;
+}
+
+/* === GAME OVER RESULTS === */
+.final-results-container {
+  width: 100%;
+  margin: 20px 0;
+}
+
+.final-results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.final-results-header h3 {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.final-results {
+  display: grid;
+  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.player-result {
+  padding: 20px;
+  border-radius: var(--border-radius-md);
+  text-align: center;
+  border: 2px solid;
+  transition: all 0.3s ease;
+}
+
+.player-result.success {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--success-text);
+}
+
+.player-result.failure {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--danger-text);
+}
+
+.player-result h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.3em;
+  font-weight: 700;
+}
+
+.player-result p {
+  margin: 5px 0;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .player-result.success {
+  background: linear-gradient(135deg, #2e7d32 0%, #388e3c 100%);
+  color: #fff;
+  border-color: #4caf50;
+}
+
+[data-theme="dark"] .player-result.failure {
+  background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
+  color: #fff;
+  border-color: #f44336;
+}

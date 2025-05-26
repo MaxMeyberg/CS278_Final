@@ -1,0 +1,412 @@
+/* === GAME SCREEN === */
+.game-header {
+  width: 100%;
+  margin-bottom: 12px; /* Reduced from 16px */
+  text-align: center;
+}
+
+.game-header h1 {
+  font-size: 1.4em;
+  margin: 0;
+  padding: 8px; /* Reduced from 12px */
+  color: var(--primary-color);
+}
+
+.player-info,
+.received-messages,
+.donation-interface {
+  width: 100%;
+  background: var(--background-container);
+  border-radius: var(--border-radius-md);
+  border: 1.5px solid var(--border-color);
+  margin-bottom: 10px; /* Reduced from 16px */
+  box-shadow: var(--shadow-sm);
+  padding: 12px; /* Reduced from 16px */
+}
+
+.received-messages {
+  margin-bottom: 10px;
+  padding-bottom: 4px;
+  flex-shrink: 0;
+  font-size: 0.95em;
+}
+
+/* Received Messages Table Structure */
+.received-messages-table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 6px;
+}
+
+.received-messages-header {
+  display: flex;
+  padding: 4px 6px;
+  margin-bottom: 4px;
+  font-size: 0.75em;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.received-messages-header .sender-col,
+.received-message-row .sender-col {
+  flex: 1 1 120px;
+  text-align: left;
+  font-size: 0.97em;
+}
+
+.received-messages-header .amount-col,
+.received-message-row .amount-col {
+  flex: 0 0 70px;
+  text-align: left;
+  margin: 0 4px;
+  font-size: 0.97em;
+}
+
+.received-messages-header .message-col,
+.received-message-row .message-col {
+  flex: 2 1 120px;
+  text-align: left;
+  font-size: 0.95em;
+}
+
+.received-messages-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.received-message-row {
+  padding: 4px 6px;
+  background: var(--background-alt);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  font-size: 0.95em;
+  min-height: 28px;
+}
+
+.received-message-row .sender-col {
+  flex-grow: 1;
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 0.97em;
+}
+
+.received-message-row .amount-col {
+  flex-shrink: 0;
+  width: 60px;
+  margin: 0 4px;
+  text-align: left;
+  font-size: 0.97em;
+}
+
+.received-message-row .message-col {
+  flex-grow: 2;
+  color: var(--text-light);
+  font-style: italic;
+  font-size: 0.95em;
+}
+
+.received-message-text {
+  font-size: 0.95em;
+}
+
+.no-message {
+  color: var(--text-light);
+  opacity: 0.5;
+}
+
+/* Remove h4 and h3 margin/padding overrides for these boxes */
+.player-info h2,
+.received-messages h4,
+.donation-interface > h3 {
+  margin: 0 0 12px 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+/* Remove old accent underline for donation-interface > h3 */
+.donation-interface > h3::after {
+  display: none;
+}
+
+.player-info h2 {
+  margin: 0;
+  font-size: 1.2em;
+  font-weight: 700;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.player-info p {
+  margin: 0;
+  font-size: 0.95em;
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.player-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: auto; /* Push to right */
+}
+
+.player-stats span.value {
+  font-weight: 600;
+  color: var(--success-text);
+}
+
+.previous-donations {
+  font-style: italic;
+  color: var(--text-light) !important;
+  padding-left: 12px;
+  border-left: 1px solid var(--border-color);
+  margin-left: auto; /* Push to the right */
+}
+
+.player-info-section {
+  flex-shrink: 0;
+}
+
+.info-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border-color);
+  margin: 0;
+}
+
+.received-donations-section {
+  flex-shrink: 0;
+}
+
+.received-donations-section h3 {
+  font-size: 1.1em;
+  margin: 0 0 12px 0;
+  color: var(--text-dark);
+}
+
+.received-donations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.received-donation-item {
+  background: var(--background-alt);
+  padding: 12px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.received-donation-item p {
+  margin: 0;
+  font-size: 0.95em;
+}
+
+.received-message {
+  color: var(--text-light);
+  font-style: italic;
+  margin-top: 4px !important;
+  padding-left: 8px;
+  border-left: 2px solid var(--accent-color);
+}
+
+/* Donation Interface */
+.donation-interface {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 4px 0 0 0; /* Reduced padding */
+}
+
+.donation-table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.donation-table-header {
+  display: flex;
+  padding: 6px 8px; /* Reduced padding */
+  background: var(--background-alt);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-light);
+  font-size: 0.82em; /* Slightly smaller */
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.donation-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* Reduced gap */
+  padding: 6px; /* Reduced padding */
+  background: var(--background-alt);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.donation-row {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Reduced gap */
+  padding: 6px 8px; /* Reduced padding */
+  background: var(--background-container);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  transition: all 0.2s ease;
+  font-size: 0.97em; /* Slightly smaller */
+}
+
+.donation-row:hover {
+  border-color: var(--primary-color);
+  background: var(--background-alt);
+}
+
+.recipient-col {
+  flex: 1 1 120px; /* Reduced min width */
+  font-size: 0.97em;
+}
+.amount-col {
+  flex: 0 0 70px; /* Reduced width */
+  text-align: center;
+}
+.message-col {
+  flex: 2 1 120px; /* Reduced min width */
+}
+
+.donation-input {
+  width: 100%;
+  padding: 4px 6px; /* Reduced padding */
+  font-size: 0.92rem; /* Slightly smaller */
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background: var(--background-container);
+  color: var(--text-dark);
+  transition: all 0.2s ease;
+  height: 28px; /* Reduced height */
+  min-height: 28px;
+  max-height: 32px;
+}
+
+.donation-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.12);
+  outline: none;
+}
+
+.amount-input {
+  width: 60px; /* Reduced width */
+  text-align: center;
+  font-size: 0.92rem;
+  height: 28px;
+  min-height: 28px;
+  max-height: 32px;
+}
+
+/* Dark mode tweaks */
+[data-theme="dark"] .donation-rows {
+  background: #23262f !important;
+}
+[data-theme="dark"] .donation-row {
+  background: #181a20 !important;
+}
+[data-theme="dark"] .donation-row:hover {
+  background: #23262f !important;
+  border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .donation-input {
+  background: var(--background-container);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .donation-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.15);
+}
+
+/* Hide multiplier in dark mode */
+[data-theme="dark"] .multiplier {
+  display: none;
+}
+
+[data-theme="dark"] .donation-table-header {
+  background: #23262f !important;
+  color: #bfc2cf !important;
+}
+
+.box-header {
+  font-size: 1.18em;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: 0.2px;
+  text-align: left;
+}
+
+/* Ensure all section headers use .box-header style */
+.player-info > .box-header,
+.received-messages > .box-header,
+.donation-interface > .box-header {
+  font-size: 1.18em;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin: 0 0 12px 0;
+  text-align: left;
+  letter-spacing: 0.2px;
+}
+
+.player-info h2,
+.received-messages h4,
+.donation-interface h3 {
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  margin: 0 0 12px 0;
+  padding: 0;
+  text-align: left;
+}
+
+.donation-row .amount-col {
+  flex: 0 0 70px;
+  text-align: left;
+}
+.donation-row .message-col {
+  flex: 2 1 120px;
+  text-align: left;
+}
+.donation-input.amount-input,
+.donation-input.message-input {
+  text-align: left;
+}
+
+.donation-amount-dollar {
+  font-size: 0.97em;
+  font-weight: 600;
+  color: var(--text-light);
+  vertical-align: middle;
+  margin-right: 2px;
+  display: inline-block;
+}

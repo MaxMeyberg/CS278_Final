@@ -1,0 +1,21 @@
+/* Money Game - Modular CSS Structure */
+
+/* Import order matters - variables first, then base styles, then components */
+
+/* 1. CSS Variables and theme definitions */
+@import "./variables.css";
+
+/* 2. Base styles, resets, and typography */
+@import "./base.css";
+
+/* 3. Shared components (buttons, forms, messages, content sections) */
+@import "./components.css";
+
+/* 4. Lobby-specific styles */
+@import "./lobby.css";
+
+/* 5. Game/playing screen styles */
+@import "./game.css";
+
+/* 6. UI components (modals, corner buttons, splash screen) */
+@import "./ui.css";
