@@ -21,11 +21,23 @@ const HowToPlayModal = ({ open, onClose }) => {
     >
       <div className="howto-modal-content">
         <button
-          className="howto-modal-close"
+          className="howto-modal-close modern-close-btn"
           onClick={onClose}
           aria-label="Close How to Play"
         >
-          &times;
+          <span
+            aria-hidden="true"
+            style={{
+              fontSize: "1.7em",
+              fontWeight: 700,
+              color: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            &#10005;
+          </span>
         </button>
         <h2>How to Play</h2>
         <div className="howto-description">
@@ -39,7 +51,7 @@ const HowToPlayModal = ({ open, onClose }) => {
           <ul>
             <li>
               Donate points to other players each round. Any donations you
-              receive are <strong>doubled</strong>!
+              receive are <strong>tripled</strong>!
             </li>
             <li>
               No one knows how much money the others have—build trust and

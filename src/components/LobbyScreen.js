@@ -1,6 +1,5 @@
 import React from "react";
-
-// Assuming you might have helper functions specific to lobby later, keep them here
+import PlayersList from "./PlayersList";
 
 function LobbyScreen({
   joinedGameId,
@@ -15,6 +14,9 @@ function LobbyScreen({
   debugDatabase,
 }) {
   const isHost = gameData?.host === playerName;
+  const playerCount = gameData?.players
+    ? Object.keys(gameData.players).length
+    : 0;
 
   return (
     <div className="lobby-container">
@@ -31,53 +33,22 @@ function LobbyScreen({
         Share this code with others to join!
       </p>
       {error && <div className="error-message">{error}</div>}
-      <div className="players-list-container">
-        {" "}
-        {/* Wrapper for list + header */}
-        <h3>
-          Players (
-          {gameData?.players ? Object.keys(gameData.players).length : 0})
-        </h3>
-        {gameData?.players ? (
-          <ul className="players-list">
-            {" "}
-            {/* Use ul for semantic list */}
-            {Object.entries(gameData.players).map(([key, player]) => (
-              <li
-                key={key}
-                className={`player-item ${
-                  player.name === playerName ? "current-player" : ""
-                }`}
-              >
-                <span>{player.name}</span>
-                <span className="player-tags">
-                  {player.isHost && <span className="host-tag">Host</span>}
-                  {player.name === playerName && (
-                    <span className="you-tag">You</span>
-                  )}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>Waiting for players...</p>
-        )}
-      </div>
+      <PlayersList
+        players={gameData?.players}
+        currentPlayerName={playerName}
+        maxInitialDisplay={2}
+      />
       {/* {isHost && ( // Keep the overall comment for the section if desired, or remove */}
       {/* Bring back Start Game button */}
       {isHost && (
         <button
           className="button-primary button-full-width" // Use new classes
           onClick={handleStartGame}
-          disabled={
-            loading ||
-            !gameData?.players ||
-            Object.keys(gameData.players).length < 2
-          }
+          disabled={loading || playerCount < 2}
         >
           {loading
             ? "Starting..."
-            : Object.keys(gameData?.players || {}).length < 2
+            : playerCount < 2
             ? "Need at least 2 players"
             : "Start Game"}
         </button>
