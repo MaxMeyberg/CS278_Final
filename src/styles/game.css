@@ -434,3 +434,33 @@
   min-height: 20px !important;
   font-size: 0.92em !important;
 }
+
+[data-theme="dark"] .donation-interface.first-round {
+  background: #181a20 !important;
+  border-color: #35384a !important;
+  color: #e0e3ef !important;
+}
+[data-theme="dark"] .donation-interface.first-round .received-messages-table {
+  background: #23262f !important;
+}
+[data-theme="dark"] .donation-interface.first-round .received-messages-header {
+  color: #bfc2cf !important;
+  border-bottom: 1px solid #35384a !important;
+}
+[data-theme="dark"] .donation-interface.first-round .received-messages-rows {
+  background: #23262f !important;
+}
+[data-theme="dark"] .donation-interface.first-round .received-message-row {
+  background: #23262f !important;
+  border-color: #35384a !important;
+  color: #e0e3ef !important;
+}
+[data-theme="dark"] .donation-interface.first-round .donation-input {
+  background: #181a20 !important;
+  color: #e0e3ef !important;
+  border-color: #35384a !important;
+}
+[data-theme="dark"] .donation-interface.first-round .donation-input:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.15) !important;
+}

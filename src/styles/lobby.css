@@ -239,3 +239,19 @@
   color: #fff;
   border-color: #f44336;
 }
+
+[data-theme="dark"] .player-item {
+  background: #181a20 !important;
+  color: #e0e3ef !important;
+}
+[data-theme="dark"] .player-item.current-player {
+  background-color: #23262f !important;
+  border-left: 4px solid var(--accent-color) !important;
+}
+[data-theme="dark"] .player-item .player-name {
+  color: #e0e3ef !important;
+}
+[data-theme="dark"] .player-item .you-tag {
+  background: #ff9800 !important;
+  color: #23262f !important;
+}
