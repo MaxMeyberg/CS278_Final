@@ -187,6 +187,7 @@ function PlayingScreen({
         handleDonationChange={handleDonationChange}
         maxInitialDisplay={1}
         maxAmount={playerObj.money}
+        isFirstRound={day === 1}
       />
 
       {/* Submit Box - Separate from donation interface */}

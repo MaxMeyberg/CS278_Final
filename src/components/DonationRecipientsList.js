@@ -6,6 +6,7 @@ function DonationRecipientsList({
   handleDonationChange,
   maxInitialDisplay = 1,
   maxAmount = 0,
+  isFirstRound = false,
 }) {
   const [showRecipientsModal, setShowRecipientsModal] = useState(false);
 
@@ -32,7 +33,7 @@ function DonationRecipientsList({
   };
 
   return (
-    <div className="donation-interface">
+    <div className={`donation-interface${isFirstRound ? " first-round" : ""}`}>
       <div
         style={{
           display: "flex",
