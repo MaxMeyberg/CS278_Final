@@ -19,6 +19,8 @@ import SetupScreen from "./components/SetupScreen";
 import LobbyScreen from "./components/LobbyScreen";
 import PlayingScreen from "./components/PlayingScreen";
 import HowToPlayModal from "./components/HowToPlayModal";
+import ThemeToggle from "./components/ThemeToggle";
+import CornerButtons from "./components/CornerButtons";
 
 function App() {
   // Game state
@@ -35,6 +37,16 @@ function App() {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [splashFading, setSplashFading] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Theme toggle handler
+  const handleThemeToggle = () => {
+    setIsDarkMode(!isDarkMode);
+    document.documentElement.setAttribute(
+      "data-theme",
+      !isDarkMode ? "dark" : "light"
+    );
+  };
 
   // Replace with this simpler filter implementation
   const FILTERED_WORDS = [
@@ -472,49 +484,14 @@ function App() {
   // Setup screen
   if (gameState === "setup") {
     return (
-      <div className="game-container">
-        {/* Floating How to Play button, always visible */}
-        <button
-          className="howto-float-btn"
-          onClick={() => setShowHowToPlay(true)}
-          aria-label="How to Play"
-          type="button"
-        >
-          <span className="howto-float-icon" aria-hidden="true">
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 28 28"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="14"
-                cy="14"
-                r="12"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                fill="#fff"
-              />
-              <rect
-                x="13.1"
-                y="12"
-                width="1.8"
-                height="8"
-                rx="0.9"
-                fill="var(--primary-color)"
-              />
-              <rect
-                x="13.1"
-                y="7.2"
-                width="1.8"
-                height="1.8"
-                rx="0.9"
-                fill="var(--primary-color)"
-              />
-            </svg>
-          </span>
-        </button>
+      <div
+        className={`game-container ${isDarkMode ? "dark-mode" : "light-mode"}`}
+      >
+        <CornerButtons
+          isDarkMode={isDarkMode}
+          onToggleTheme={handleThemeToggle}
+          onInfoClick={() => setShowHowToPlay(true)}
+        />
         <HowToPlayModal
           open={showHowToPlay}
           onClose={() => setShowHowToPlay(false)}
@@ -538,49 +515,14 @@ function App() {
   // Lobby screen
   if (gameState === "lobby") {
     return (
-      <div className="game-container">
-        {/* Floating How to Play button, always visible */}
-        <button
-          className="howto-float-btn"
-          onClick={() => setShowHowToPlay(true)}
-          aria-label="How to Play"
-          type="button"
-        >
-          <span className="howto-float-icon" aria-hidden="true">
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 28 28"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="14"
-                cy="14"
-                r="12"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                fill="#fff"
-              />
-              <rect
-                x="13.1"
-                y="12"
-                width="1.8"
-                height="8"
-                rx="0.9"
-                fill="var(--primary-color)"
-              />
-              <rect
-                x="13.1"
-                y="7.2"
-                width="1.8"
-                height="1.8"
-                rx="0.9"
-                fill="var(--primary-color)"
-              />
-            </svg>
-          </span>
-        </button>
+      <div
+        className={`game-container ${isDarkMode ? "dark-mode" : "light-mode"}`}
+      >
+        <CornerButtons
+          isDarkMode={isDarkMode}
+          onToggleTheme={handleThemeToggle}
+          onInfoClick={() => setShowHowToPlay(true)}
+        />
         <HowToPlayModal
           open={showHowToPlay}
           onClose={() => setShowHowToPlay(false)}
@@ -603,49 +545,14 @@ function App() {
   // Playing screen
   if (gameState === "playing") {
     return (
-      <div className="game-container">
-        {/* Floating How to Play button, always visible */}
-        <button
-          className="howto-float-btn"
-          onClick={() => setShowHowToPlay(true)}
-          aria-label="How to Play"
-          type="button"
-        >
-          <span className="howto-float-icon" aria-hidden="true">
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 28 28"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="14"
-                cy="14"
-                r="12"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                fill="#fff"
-              />
-              <rect
-                x="13.1"
-                y="12"
-                width="1.8"
-                height="8"
-                rx="0.9"
-                fill="var(--primary-color)"
-              />
-              <rect
-                x="13.1"
-                y="7.2"
-                width="1.8"
-                height="1.8"
-                rx="0.9"
-                fill="var(--primary-color)"
-              />
-            </svg>
-          </span>
-        </button>
+      <div
+        className={`game-container ${isDarkMode ? "dark-mode" : "light-mode"}`}
+      >
+        <CornerButtons
+          isDarkMode={isDarkMode}
+          onToggleTheme={handleThemeToggle}
+          onInfoClick={() => setShowHowToPlay(true)}
+        />
         <HowToPlayModal
           open={showHowToPlay}
           onClose={() => setShowHowToPlay(false)}
@@ -673,7 +580,14 @@ function App() {
     );
 
     return (
-      <div className="game-container">
+      <div
+        className={`game-container ${isDarkMode ? "dark-mode" : "light-mode"}`}
+      >
+        <CornerButtons
+          isDarkMode={isDarkMode}
+          onToggleTheme={handleThemeToggle}
+          onInfoClick={() => setShowHowToPlay(true)}
+        />
         <h1>{allHaveEnough ? "Victory!" : "Game Over"}</h1>
 
         <div className="game-result">
@@ -711,7 +625,18 @@ function App() {
     );
   }
 
-  return <div className="game-container">Loading...</div>;
+  return (
+    <div
+      className={`game-container ${isDarkMode ? "dark-mode" : "light-mode"}`}
+    >
+      <CornerButtons
+        isDarkMode={isDarkMode}
+        onToggleTheme={handleThemeToggle}
+        onInfoClick={() => setShowHowToPlay(true)}
+      />
+      Loading...
+    </div>
+  );
 }
 
 export default App;
