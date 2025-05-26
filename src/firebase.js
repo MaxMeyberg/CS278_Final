@@ -241,7 +241,7 @@ const startGame = async (gameId) => {
 const submitDonations = async (gameId, playerName, donations, day) => {
   try {
     console.log(
-      `📣 BROADCAST: Player ${playerName} submitting donations`,
+      `📣 BROADCAST: Player ${playerName} submitting donations for day ${day}`,
       donations
     );
     const gameRef = ref(db, `games/${gameId}`);
@@ -266,11 +266,11 @@ const submitDonations = async (gameId, playerName, donations, day) => {
       return false;
     }
 
-    // Set donations and ready status
-    console.log(`📣 BROADCAST: Setting donations for day ${day}`);
-    // Now donations will include both amount and message
+    // Use dayKey format "dayX"
+    const dayKey = `day${day}`;
+    console.log(`📣 BROADCAST: Setting donations for ${dayKey}`);
     await set(
-      ref(db, `games/${gameId}/donations/${day}/${playerName}`),
+      ref(db, `games/${gameId}/donations/${dayKey}/${playerName}`),
       donations
     );
 
@@ -301,61 +301,66 @@ const processDonations = async (gameId) => {
     const gameData = snapshot.val();
     const { players, donations, day } = gameData;
 
+    // Use dayKey format "dayX"
+    const dayKey = `day${day}`;
+
     console.log(
-      `Processing day ${day} donations:`,
-      donations && donations[day] ? donations[day] : "No donations"
+      `Processing ${dayKey} donations:`,
+      donations && donations[dayKey] ? donations[dayKey] : "No donations"
     );
 
     // Process donations
     const updatedPlayers = { ...players };
 
-    if (donations && donations[day]) {
-      Object.entries(donations[day]).forEach(([donorName, recipientData]) => {
-        let totalDonated = 0;
+    if (donations && donations[dayKey]) {
+      Object.entries(donations[dayKey]).forEach(
+        ([donorName, recipientData]) => {
+          let totalDonated = 0;
 
-        // Find donor player key
-        let donorKey = null;
-        Object.entries(players).forEach(([key, player]) => {
-          if (player.name === donorName) {
-            donorKey = key;
-          }
-        });
-
-        if (!donorKey) {
-          console.error(`❌ Donor ${donorName} not found`);
-          return;
-        }
-
-        Object.entries(recipientData).forEach(([recipientName, data]) => {
-          const numAmount = Number(data.amount);
-          totalDonated += numAmount;
-
-          // Find recipient player key
-          let recipientKey = null;
+          // Find donor player key
+          let donorKey = null;
           Object.entries(players).forEach(([key, player]) => {
-            if (player.name === recipientName) {
-              recipientKey = key;
+            if (player.name === donorName) {
+              donorKey = key;
             }
           });
 
-          if (!recipientKey) {
-            console.error(`❌ Recipient ${recipientName} not found`);
+          if (!donorKey) {
+            console.error(`❌ Donor ${donorName} not found`);
             return;
           }
 
-          // Add tripled amount to recipient
-          updatedPlayers[recipientKey].money += numAmount * 3;
-          console.log(
-            `💰 ${recipientName} receives $${
-              numAmount * 3
-            } from ${donorName} with message: ${data.message}`
-          );
-        });
+          Object.entries(recipientData).forEach(([recipientName, data]) => {
+            const numAmount = Number(data.amount);
+            totalDonated += numAmount;
 
-        // Subtract from donor
-        updatedPlayers[donorKey].money -= totalDonated;
-        console.log(`💸 ${donorName} donated $${totalDonated} total`);
-      });
+            // Find recipient player key
+            let recipientKey = null;
+            Object.entries(players).forEach(([key, player]) => {
+              if (player.name === recipientName) {
+                recipientKey = key;
+              }
+            });
+
+            if (!recipientKey) {
+              console.error(`❌ Recipient ${recipientName} not found`);
+              return;
+            }
+
+            // Add tripled amount to recipient
+            updatedPlayers[recipientKey].money += numAmount * 3;
+            console.log(
+              `💰 ${recipientName} receives $${
+                numAmount * 3
+              } from ${donorName} with message: ${data.message}`
+            );
+          });
+
+          // Subtract from donor
+          updatedPlayers[donorKey].money -= totalDonated;
+          console.log(`💸 ${donorName} donated $${totalDonated} total`);
+        }
+      );
     }
 
     // Add daily $100 to each player

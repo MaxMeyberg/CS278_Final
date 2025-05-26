@@ -431,30 +431,35 @@ function App() {
   // Make sure getReceivedDonations is defined here or imported if needed
   // Add this function near your other helper functions if not already present
   const getReceivedDonations = (gameData, day, playerName) => {
-    const dayKey = `day${day}`; // Assuming keys are day1, day2 etc.
-    if (!gameData?.donations?.[dayKey]) return [];
+    // Support both formats: numeric keys (1,2,3) or 'dayX'
+    const dayKeyNumeric = String(day);
+    const dayKeyFormatted = `day${day}`;
+
+    const donationsForDay =
+      gameData?.donations?.[dayKeyFormatted] ||
+      gameData?.donations?.[dayKeyNumeric] ||
+      null;
+
+    if (!donationsForDay) return [];
 
     const received = [];
-    Object.entries(gameData.donations[dayKey]).forEach(
-      ([donorName, donations]) => {
-        // Check if this donor donated to the current player
-        const donationToPlayer = Object.entries(donations).find(
-          ([recipientName, data]) => recipientName === playerName
-        );
+    Object.entries(donationsForDay).forEach(([donorName, donations]) => {
+      const donationToPlayer = Object.entries(donations).find(
+        ([recipientName, data]) => recipientName === playerName
+      );
 
-        if (
-          donationToPlayer &&
-          donationToPlayer[1] &&
-          donationToPlayer[1].amount > 0
-        ) {
-          received.push({
-            from: donorName,
-            amount: donationToPlayer[1].amount,
-            message: donationToPlayer[1].message || "",
-          });
-        }
+      if (
+        donationToPlayer &&
+        donationToPlayer[1] &&
+        donationToPlayer[1].amount > 0
+      ) {
+        received.push({
+          from: donorName,
+          amount: donationToPlayer[1].amount,
+          message: donationToPlayer[1].message || "",
+        });
       }
-    );
+    });
     return received;
   };
 
