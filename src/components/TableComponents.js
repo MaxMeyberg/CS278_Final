@@ -33,6 +33,7 @@ export const ViewAllObject = ({
   columns,
   renderRow,
   modalClassName = "",
+  balanceInfo = null, // Optional balance information for donation modals
 }) => {
   if (!isOpen) return null;
 
@@ -56,6 +57,33 @@ export const ViewAllObject = ({
           &times;
         </button>
         <h2>{title}</h2>
+
+        {/* Balance Information Section - Only for donation modals */}
+        {balanceInfo && (
+          <div className="modal-balance-info">
+            <div className="balance-item">
+              <span className="balance-label">Your Balance:</span>
+              <span className="balance-value">${balanceInfo.maxAmount}</span>
+            </div>
+            <div className="balance-item">
+              <span className="balance-label">Total Donations:</span>
+              <span className="balance-value">
+                ${balanceInfo.totalDonations}
+              </span>
+            </div>
+            <div className="balance-item">
+              <span className="balance-label">Remaining:</span>
+              <span
+                className={`balance-value ${
+                  balanceInfo.remainingBalance < 0 ? "negative" : ""
+                }`}
+              >
+                ${balanceInfo.remainingBalance}
+              </span>
+            </div>
+          </div>
+        )}
+
         <DataTable
           columns={columns}
           data={data}

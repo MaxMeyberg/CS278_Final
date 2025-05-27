@@ -51,27 +51,35 @@
 .received-message-row .sender-col,
 .donation-interface .received-messages-header .sender-col,
 .donation-interface .received-message-row .sender-col {
-  flex: 1 1 120px;
+  flex: 0 0 120px;
   text-align: left;
   min-width: 120px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .received-messages-header .amount-col,
 .received-message-row .amount-col,
 .donation-interface .received-messages-header .amount-col,
 .donation-interface .received-message-row .amount-col {
-  flex: 0 0 80px;
+  flex: 0 0 100px;
   text-align: left;
-  margin: 0 8px;
-  min-width: 80px;
+  margin: 0 10px;
+  min-width: 100px;
+  max-width: 100px;
+  padding: 0;
 }
 
 .received-messages-header .message-col,
 .received-message-row .message-col,
 .donation-interface .received-messages-header .message-col,
 .donation-interface .received-message-row .message-col {
-  flex: 2;
+  flex: 1;
   text-align: left;
+  padding: 0;
+  min-width: 150px;
 }
 
 .received-messages-rows,
@@ -88,7 +96,7 @@
   padding: 6px 8px;
   background: var(--background-alt);
   border-radius: 4px;
-  border: 1px solid var(--border-color);
+  border: none;
   display: flex;
   align-items: center;
   font-size: 1.1em;
@@ -228,19 +236,21 @@
 .donation-interface .donation-input {
   width: 100%;
   padding: 0;
-  border: none;
-  border-radius: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
   font-size: 1.1em;
   background: transparent;
   color: var(--text-dark);
   font-family: inherit;
   font-weight: inherit;
   font-style: inherit;
+  text-align: left;
 }
 
 .donation-interface .donation-input:focus {
   outline: 1px solid var(--primary-color);
   outline-offset: 1px;
+  border-color: var(--primary-color);
 }
 
 .donation-interface .amount-input {
@@ -255,6 +265,7 @@
   color: var(--text-light);
   font-style: italic;
   font-size: 1.05em;
+  text-align: left;
 }
 
 /* Dark mode tweaks */
@@ -398,30 +409,38 @@
 
 .received-messages-modal .received-messages-header .sender-col,
 .donation-recipients-modal .received-messages-header .sender-col {
-  flex: 1 1 130px;
-  min-width: 130px;
+  flex: 0 0 120px;
+  min-width: 120px;
+  max-width: 120px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: left;
+  padding: 0;
 }
 
 .received-messages-modal .received-messages-header .amount-col,
 .donation-recipients-modal .received-messages-header .amount-col {
-  flex: 0 0 120px;
-  min-width: 120px;
+  flex: 0 0 100px;
+  min-width: 100px;
+  max-width: 100px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin: 0 8px;
+  margin: 0 10px;
+  text-align: left;
+  padding: 0;
 }
 
 .received-messages-modal .received-messages-header .message-col,
 .donation-recipients-modal .received-messages-header .message-col {
-  flex: 2;
-  min-width: 100px;
+  flex: 1;
+  min-width: 150px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: left;
+  padding: 0;
 }
 
 .received-messages-modal .received-messages-rows,
@@ -439,24 +458,35 @@
   padding: 8px 10px;
   background: var(--background-alt);
   border-radius: 4px;
-  border: 1px solid var(--border-color);
+  border: none;
 }
 
 .received-messages-modal .sender-col,
 .donation-recipients-modal .sender-col {
   font-weight: 600;
   color: var(--primary-color);
-  min-width: 130px;
+  flex: 0 0 120px;
+  min-width: 120px;
+  max-width: 120px;
   font-size: 1.1em;
+  text-align: left;
+  padding: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .received-messages-modal .amount-col,
 .donation-recipients-modal .amount-col {
   font-weight: 600;
-  min-width: 90px;
+  flex: 0 0 100px;
+  min-width: 100px;
+  max-width: 100px;
+  margin: 0 10px;
   text-align: left;
   color: var(--success-text);
   font-size: 1.1em;
+  padding: 0;
 }
 
 .received-messages-modal .message-col,
@@ -464,7 +494,10 @@
   color: var(--text-light);
   font-style: italic;
   flex: 1;
+  min-width: 150px;
   font-size: 1.05em;
+  text-align: left;
+  padding: 0;
 }
 
 /* Simple input fields in donation modal - Bigger text */
@@ -478,6 +511,7 @@
   color: var(--text-dark);
   transition: border-color 0.2s ease;
   height: 32px;
+  text-align: left;
 }
 
 .donation-recipients-modal .donation-input:focus {
@@ -495,6 +529,59 @@
 .donation-recipients-modal .message-input {
   color: var(--text-dark);
   font-size: 1.05em;
+  text-align: left;
+}
+
+/* Balance Information Section in Modal */
+.modal-balance-info {
+  background: var(--background-alt);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.balance-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.balance-label {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.balance-value {
+  font-size: 1.2em;
+  font-weight: 700;
+  color: var(--success-text);
+}
+
+.balance-value.negative {
+  color: #dc3545 !important;
+}
+
+.balance-value.negative::before {
+  content: "⚠️ ";
+}
+
+/* Dark mode for balance info */
+[data-theme="dark"] .modal-balance-info {
+  background: #23262f;
+  border-color: #35384a;
+}
+
+[data-theme="dark"] .balance-value.negative {
+  color: #ff6b6b !important;
 }
 
 /* Simple Dark mode adjustments */

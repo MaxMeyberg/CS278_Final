@@ -128,15 +128,36 @@ button,
 
 button:disabled,
 .corner-simple-btn:disabled {
-  background: #444a5a;
-  color: #bfc2cf;
-  opacity: 0.7;
+  background: #6c757d !important;
+  color: #adb5bd !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+button:disabled:hover,
+button:disabled:focus,
+button:disabled:active,
+.corner-simple-btn:disabled:hover,
+.corner-simple-btn:disabled:focus,
+.corner-simple-btn:disabled:active {
+  background: #6c757d !important;
+  color: #adb5bd !important;
+  box-shadow: none !important;
+  transform: none !important;
+  cursor: not-allowed !important;
 }
 
 button:active,
 .corner-simple-btn:active {
   animation: btnBounce 0.18s;
   box-shadow: 0 2px 8px #e74c3c44;
+}
+
+button:disabled:active,
+.corner-simple-btn:disabled:active {
+  animation: none !important;
 }
 
 @keyframes btnBounce {
@@ -151,8 +172,8 @@ button:active,
   }
 }
 
-button:hover,
-.corner-simple-btn:hover {
+button:hover:not(:disabled),
+.corner-simple-btn:hover:not(:disabled) {
   box-shadow: 0 0 16px 4px #f1c40f66, 0 6px 24px #e74c3c22;
   background: linear-gradient(90deg, #e74c3c 0%, #f1c40f 100%);
   color: #fff;
@@ -176,6 +197,17 @@ button:hover,
   box-shadow: var(--shadow-md);
 }
 
+.button-primary:disabled,
+.start-game-button:disabled,
+.submit-button:disabled {
+  background: #6c757d !important;
+  border-color: #6c757d !important;
+  color: #adb5bd !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
 /* Secondary Button (Blue - Default) */
 .button-secondary,
 .join-button,
@@ -197,6 +229,17 @@ button:not(:disabled):hover {
   box-shadow: var(--shadow-md);
 }
 
+.button-secondary:disabled,
+.join-button:disabled,
+.restart-button:disabled {
+  background: #6c757d !important;
+  border-color: #6c757d !important;
+  color: #adb5bd !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
 /* Accent Button (Example usage if needed, maybe for debug?) */
 .button-accent {
   background-color: var(--accent-color);
@@ -206,6 +249,15 @@ button:not(:disabled):hover {
 .button-accent:not(:disabled):hover {
   background-color: #dab10d; /* Darker yellow */
   border-color: #dab10d;
+}
+
+.button-accent:disabled {
+  background: #6c757d !important;
+  border-color: #6c757d !important;
+  color: #adb5bd !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
 }
 
 /* Full width button utility */
@@ -234,7 +286,7 @@ button:not(:disabled):hover {
   transition: all 0.2s ease;
 }
 
-.button-link:hover {
+.button-link:hover:not(:disabled) {
   background: var(--primary-color);
   color: var(--white);
   text-decoration: none;
@@ -242,10 +294,11 @@ button:not(:disabled):hover {
   transform: none;
 }
 
-.button-link[disabled] {
-  opacity: 0.4;
-  cursor: default;
-  pointer-events: none;
+.button-link:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  color: #6c757d !important;
 }
 
 /* === FORMS === */

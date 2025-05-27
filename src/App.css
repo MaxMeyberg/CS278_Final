@@ -207,9 +207,25 @@ button,
 
 button:disabled,
 .corner-simple-btn:disabled {
-  background: #444a5a;
-  color: #bfc2cf;
-  opacity: 0.7;
+  background: #6c757d !important;
+  color: #adb5bd !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+button:disabled:hover,
+button:disabled:focus,
+button:disabled:active,
+.corner-simple-btn:disabled:hover,
+.corner-simple-btn:disabled:focus,
+.corner-simple-btn:disabled:active {
+  background: #6c757d !important;
+  color: #adb5bd !important;
+  box-shadow: none !important;
+  transform: none !important;
+  cursor: not-allowed !important;
 }
 
 button:active,
@@ -217,6 +233,12 @@ button:active,
   animation: btnBounce 0.18s;
   box-shadow: 0 2px 8px #e74c3c44;
 }
+
+button:disabled:active,
+.corner-simple-btn:disabled:active {
+  animation: none !important;
+}
+
 @keyframes btnBounce {
   0% {
     transform: scale(1);
@@ -228,8 +250,9 @@ button:active,
     transform: scale(1);
   }
 }
-button:hover,
-.corner-simple-btn:hover {
+
+button:hover:not(:disabled),
+.corner-simple-btn:hover:not(:disabled) {
   box-shadow: 0 0 16px 4px #f1c40f66, 0 6px 24px #e74c3c22;
   background: linear-gradient(90deg, #e74c3c 0%, #f1c40f 100%);
   color: #fff;

@@ -68,7 +68,7 @@ export default function SetupScreen({
             </button>
             <button
               onClick={() => setJoinMode(true)}
-              disabled={loading}
+              disabled={!localName.trim() || loading}
               className="button-primary button-full-width"
               style={{ height: 64, fontSize: 26 }}
             >

@@ -23,8 +23,8 @@ function DonationRecipientsList({
 
   const columns = [
     { label: "Recipient", className: "sender-col" },
-    { label: "Amount ($)", className: "amount-col" },
-    { label: "Message (Optional)", className: "message-col" },
+    { label: "Amount", className: "amount-col" },
+    { label: "Message", className: "message-col" },
   ];
 
   const renderRow = (player, idx) => {
@@ -88,6 +88,11 @@ function DonationRecipientsList({
         columns={columns}
         renderRow={renderRow}
         modalClassName="donation-recipients-modal"
+        balanceInfo={{
+          maxAmount,
+          totalDonations,
+          remainingBalance,
+        }}
       />
     </div>
   );

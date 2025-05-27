@@ -6,7 +6,7 @@ function ReceivedMessagesList({ messages = [], maxInitialDisplay = 1 }) {
 
   const columns = [
     { label: "From", className: "sender-col" },
-    { label: "Amount ($)", className: "amount-col" },
+    { label: "Amount", className: "amount-col" },
     { label: "Message", className: "message-col" },
   ];
 
