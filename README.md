@@ -1,3 +1,5 @@
+Access game: https://cs278-final-67682.web.app
+
 ### 1. Clone the Repository
 
 ```bash
