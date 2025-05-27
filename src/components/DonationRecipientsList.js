@@ -27,9 +27,54 @@ function DonationRecipientsList({
     { label: "Message", className: "message-col" },
   ];
 
+  // Simple profanity filter
+  const filterProfanity = (text) => {
+    const badWords = [
+      "fuck",
+      "shit",
+      "damn",
+      "hell",
+      "ass",
+      "bitch",
+      "bastard",
+      "crap",
+      "piss",
+      "dick",
+      "cock",
+      "pussy",
+      "whore",
+      "slut",
+      "fag",
+      "nigger",
+      "retard",
+      "gay",
+      "stupid",
+      "idiot",
+      "moron",
+      "dumb",
+      "kill",
+      "die",
+      "hate",
+      "suck",
+      "loser",
+      "ugly",
+      "fat",
+      "dumbass",
+      "asshole",
+    ];
+
+    let filtered = text;
+    badWords.forEach((word) => {
+      const regex = new RegExp(`\\b${word}\\b`, "gi");
+      filtered = filtered.replace(regex, "*".repeat(word.length));
+    });
+    return filtered;
+  };
+
   const renderRow = (player, idx) => {
     const playerDonation = currentDonations[player.name]?.amount || 0;
     const hasError = Number(playerDonation) > 0 && isOverLimit;
+    const isAmountNonZero = playerDonation > 0;
 
     return (
       <div className="received-message-row" key={idx}>
@@ -41,8 +86,26 @@ function DonationRecipientsList({
             type="number"
             min="0"
             max={maxAmount}
+            step="1"
             value={currentDonations[player.name]?.amount || ""}
             onChange={(e) => handleDonationChange(player.name, e.target.value)}
+            onKeyDown={(e) => {
+              // Allow only numbers and basic editing keys
+              const allowedKeys = [
+                "Backspace",
+                "Delete",
+                "Tab",
+                "Enter",
+                "ArrowLeft",
+                "ArrowRight",
+              ];
+              const isNumber = e.key >= "0" && e.key <= "9";
+              const isCtrlCmd = e.ctrlKey || e.metaKey;
+
+              if (!isNumber && !allowedKeys.includes(e.key) && !isCtrlCmd) {
+                e.preventDefault();
+              }
+            }}
             className={`donation-input amount-input ${hasError ? "error" : ""}`}
             placeholder="$0"
           />
@@ -50,16 +113,34 @@ function DonationRecipientsList({
         <div className="message-col">
           <input
             type="text"
-            value={currentDonations[player.name]?.message || ""}
-            onChange={(e) =>
+            value={
+              playerDonation === 0
+                ? ""
+                : currentDonations[player.name]?.message || ""
+            }
+            onChange={(e) => {
+              if (playerDonation === 0) return;
+              const filteredMessage = filterProfanity(e.target.value);
               handleDonationChange(
                 player.name,
-                currentDonations[player.name]?.amount || 0,
-                e.target.value
-              )
+                playerDonation,
+                filteredMessage
+              );
+            }}
+            onKeyDown={(e) => {
+              // Block ALL input when amount is 0
+              if (playerDonation === 0) {
+                e.preventDefault();
+                return;
+              }
+            }}
+            disabled={playerDonation === 0}
+            className={`donation-input message-input ${
+              playerDonation === 0 ? "readonly-style" : ""
+            }`}
+            placeholder={
+              playerDonation === 0 ? "Enter donation amount first!" : ""
             }
-            className="donation-input message-input"
-            placeholder="Add a message..."
             maxLength={50}
           />
         </div>

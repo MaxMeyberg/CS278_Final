@@ -245,6 +245,7 @@
   font-weight: inherit;
   font-style: inherit;
   text-align: left;
+  height: 32px;
 }
 
 .donation-interface .donation-input:focus {
@@ -266,6 +267,13 @@
   font-style: italic;
   font-size: 1.05em;
   text-align: left;
+}
+
+.donation-interface .amount-input.readonly-style {
+  background-color: var(--background-alt);
+  color: var(--text-light);
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 /* Dark mode tweaks */

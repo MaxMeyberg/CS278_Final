@@ -185,13 +185,25 @@ export default function App() {
   // Donations logic
   const handleDonationChange = (to, amount, msg = null) => {
     const num = amount === "" ? 0 : Math.max(0, Number(amount));
-    setCurrentDonations((prev) => ({
-      ...prev,
-      [to]: {
-        amount: num,
-        message: msg !== null ? msg : prev[to]?.message || "",
-      },
-    }));
+
+    // If amount becomes 0, clear both amount and message
+    if (num === 0) {
+      setCurrentDonations((prev) => ({
+        ...prev,
+        [to]: {
+          amount: 0,
+          message: "",
+        },
+      }));
+    } else {
+      setCurrentDonations((prev) => ({
+        ...prev,
+        [to]: {
+          amount: num,
+          message: msg !== null ? msg : prev[to]?.message || "",
+        },
+      }));
+    }
   };
 
   const calculateTotalDonations = () =>
@@ -243,11 +255,15 @@ export default function App() {
     const received = [];
     Object.entries(donations).forEach(([donor, recips]) => {
       if (recips[playerName]) {
-        received.push({
-          from: donor,
-          amount: recips[playerName].amount || 0,
-          message: recips[playerName].message || "",
-        });
+        const amount = recips[playerName].amount || 0;
+        // Only include donations with amount > 0
+        if (amount > 0) {
+          received.push({
+            from: donor,
+            amount: amount,
+            message: recips[playerName].message || "",
+          });
+        }
       }
     });
     return received;
