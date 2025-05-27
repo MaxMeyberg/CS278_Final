@@ -1156,3 +1156,15 @@ button:not(:disabled):hover {
   background: #23262f;
   border-color: var(--border-color);
 }
+
+/* === SMALLER SUBMIT BUTTON === */
+.submit-button {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  padding: 12px 24px !important;
+  height: 40px !important;
+  margin: 8px auto !important;
+  border-radius: 20px !important;
+  max-width: 280px !important;
+  width: auto !important;
+}

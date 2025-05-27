@@ -199,7 +199,7 @@ function PlayingScreen({
       {/* Submit Box - Separate from donation interface */}
       <div className="submit-box">
         <button
-          className="button-primary submit-button button-full-width"
+          className="button-primary submit-button"
           onClick={handleSubmitDonations}
           disabled={loading || remainingBalance < 0}
         >
