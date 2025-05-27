@@ -169,7 +169,13 @@ function PlayingScreen({
           </p>
           <p>
             Remaining After Donations:{" "}
-            <span className="value">${remainingBalance}</span>
+            <span
+              className={`value ${
+                remainingBalance < 0 ? "remaining-balance negative" : ""
+              }`}
+            >
+              ${remainingBalance}
+            </span>
           </p>
         </div>
       </div>

@@ -1,0 +1,135 @@
+import React from "react";
+
+// Unified DataTable component for rendering table structure
+export const DataTable = ({
+  columns,
+  data,
+  renderRow,
+  className = "",
+  style = {},
+}) => (
+  <div className={`received-messages-table ${className}`} style={style}>
+    <div className="received-messages-header">
+      {columns.map((col, idx) => (
+        <div key={idx} className={col.className}>
+          {col.label}
+        </div>
+      ))}
+    </div>
+    <div className="received-messages-rows">
+      {data.map((item, idx) => renderRow(item, idx))}
+    </div>
+  </div>
+);
+
+// Modal component for "View All" functionality
+// Both received messages and donation modals use identical styling
+// The only difference is the content (static text vs input fields)
+export const ViewAllObject = ({
+  isOpen,
+  onClose,
+  title,
+  data,
+  columns,
+  renderRow,
+  modalClassName = "",
+}) => {
+  if (!isOpen) return null;
+
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={handleOverlayClick}>
+      <div className={`modal-content ${modalClassName}`}>
+        <button
+          className="modal-close-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+          aria-label="Close modal"
+        >
+          &times;
+        </button>
+        <h2>{title}</h2>
+        <DataTable
+          columns={columns}
+          data={data}
+          renderRow={renderRow}
+          style={{ padding: "12px" }}
+        />
+      </div>
+    </div>
+  );
+};
+
+// Main list component with header, table, and "View All" button
+export const ListObject = ({
+  title,
+  data,
+  columns,
+  renderRow,
+  maxInitialDisplay = 1,
+  onViewAll,
+  emptyMessage,
+  headerStyle = {},
+  containerClassName = "",
+  showViewAll = true,
+}) => {
+  if (!data || data.length === 0) {
+    return (
+      <div className={containerClassName}>
+        <h4 className="box-header">{title}</h4>
+        <p className="received-message-empty">
+          {emptyMessage || "No items to display."}
+        </p>
+      </div>
+    );
+  }
+
+  const initialDataToDisplay = data.slice(0, maxInitialDisplay);
+
+  return (
+    <div className={containerClassName}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          ...headerStyle,
+        }}
+      >
+        <h4
+          className="box-header"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            fontWeight: 700,
+            color: "var(--primary-color)",
+            textTransform: "uppercase",
+            fontSize: "1.15em",
+          }}
+        >
+          <strong>{title}</strong>
+        </h4>
+        {showViewAll && (
+          <button className="button-link" onClick={onViewAll}>
+            View All ({data.length})
+          </button>
+        )}
+      </div>
+
+      <DataTable
+        columns={columns}
+        data={initialDataToDisplay}
+        renderRow={renderRow}
+        style={{ padding: "12px" }}
+      />
+    </div>
+  );
+};

@@ -1,10 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 
-function SetupScreen({
-  playerName,
-  setPlayerName,
-  gameIdInput,
-  setGameIdInput,
+export default function SetupScreen({
   handleCreateGame,
   handleJoinGame,
   loading,
@@ -12,109 +8,83 @@ function SetupScreen({
   joinMode,
   setJoinMode,
 }) {
+  const [localName, setLocalName] = useState("");
+  const [localGameId, setLocalGameId] = useState("");
+
   return (
-    <div className="game-container">
-      {" "}
-      {/* Keep game-container for overall layout? Or move to App? Let's keep for now */}
+    <div className="setup-section">
       <h1>Money Game</h1>
-      {error && <div className="error-message">{error}</div>}
-      {!joinMode ? (
-        // Initial screen with create or join options
-        <div className="setup-section">
-          <div className="form-group">
-            <label>Your Name</label>
+      <div style={{ width: "100%", maxWidth: 420 }}>
+        <input
+          value={localName}
+          onChange={(e) => setLocalName(e.target.value)}
+          placeholder="Your name"
+          className="form-group-input setup-input"
+          style={{ marginBottom: 28, fontSize: 24, height: 56, width: "100%" }}
+        />
+        {joinMode ? (
+          <>
             <input
-              type="text"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="Enter your name"
-              className="input" // Use consistent class if defined globally
-            />
-          </div>
-
-          <button
-            className="button-primary button-full-width" // Use new button classes
-            onClick={handleCreateGame}
-            disabled={loading || !playerName.trim()}
-          >
-            {loading ? "Creating..." : "Create New Game"}
-          </button>
-
-          <div className="or-divider">OR</div>
-
-          <button
-            onClick={() => setJoinMode(true)}
-            className="button-secondary button-full-width" // Use new button classes
-            // Remove inline styles, rely on CSS classes
-          >
-            Join Existing Game
-          </button>
-        </div>
-      ) : (
-        // Join mode screen
-        <div className="join-section">
-          <h2>Join a Game</h2>
-
-          <div className="form-group">
-            <label>Your Name</label>
-            <input
-              type="text"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="Enter your name"
-              autoFocus
-              className="input"
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Game Code</label>
-            <input
-              type="text"
-              value={gameIdInput}
-              onChange={(e) => setGameIdInput(e.target.value)}
-              placeholder="Enter game code"
-              className="input"
-            />
-          </div>
-
-          <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-            <button
-              onClick={() => setJoinMode(false)}
-              className="button-secondary" // Use new button classes
-              style={{ flex: 1 }} // Keep flex for layout
-            >
-              Back
-            </button>
-
-            <button
-              onClick={() => {
-                console.log("🔴 BUTTON CLICKED: Join Game button was clicked!");
-                console.log("🔴 Current state:", { playerName, gameIdInput });
-                console.log("🔴 Calling handleJoinGame...");
-                handleJoinGame();
+              value={localGameId}
+              onChange={(e) => setLocalGameId(e.target.value.toUpperCase())}
+              placeholder="Game code"
+              maxLength={6}
+              className="form-group-input setup-input"
+              style={{
+                marginBottom: 28,
+                fontSize: 24,
+                height: 56,
+                width: "100%",
               }}
-              disabled={loading || !playerName.trim() || !gameIdInput.trim()}
-              className="button-primary" // Use new button classes
-              style={{ flex: 2 }} // Keep flex for layout
+            />
+            <div style={{ display: "flex", gap: 18, marginBottom: 18 }}>
+              <button
+                onClick={() => setJoinMode(false)}
+                disabled={loading}
+                className="button-secondary button-full-width"
+                style={{ height: 56, fontSize: 22 }}
+              >
+                Back
+              </button>
+              <button
+                onClick={() => handleJoinGame(localName, localGameId)}
+                disabled={!localName.trim() || !localGameId.trim() || loading}
+                className="button-primary button-full-width"
+                style={{ height: 56, fontSize: 22 }}
+              >
+                {loading ? "Joining…" : "Join"}
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={() => handleCreateGame(localName)}
+              disabled={!localName.trim() || loading}
+              className="button-secondary button-full-width"
+              style={{ height: 64, fontSize: 26, marginBottom: 18 }}
             >
-              {loading ? "Joining..." : "Join Game"}
+              {loading ? "Creating…" : "Create game"}
             </button>
+            <button
+              onClick={() => setJoinMode(true)}
+              disabled={loading}
+              className="button-primary button-full-width"
+              style={{ height: 64, fontSize: 26 }}
+            >
+              Join existing game
+            </button>
+          </>
+        )}
+        {error && (
+          <div
+            className="error-message"
+            style={{ marginTop: 18, fontSize: 18, textAlign: "center" }}
+          >
+            {error}
           </div>
-
-          {/* Removed the Debug Join button for cleaner UI, can be re-added if needed */}
-          {/* <div style={{ marginTop: '10px' }}>
-            <button 
-              onClick={() => { ... }}
-              style={{ backgroundColor: '#ff9800', color: 'white' }}
-            >
-              Debug Join (Test)
-            </button>
-          </div> */}
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
-
-export default SetupScreen;

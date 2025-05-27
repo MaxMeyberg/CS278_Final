@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ListObject, ViewAllObject } from "./TableComponents";
 
 function DonationRecipientsList({
   recipients = [],
@@ -10,171 +11,84 @@ function DonationRecipientsList({
 }) {
   const [showRecipientsModal, setShowRecipientsModal] = useState(false);
 
-  if (!recipients || recipients.length === 0) {
+  // Calculate total donations
+  const totalDonations = Object.values(currentDonations).reduce(
+    (sum, donation) => sum + (Number(donation.amount) || 0),
+    0
+  );
+
+  // Check if over limit
+  const isOverLimit = totalDonations > maxAmount;
+  const remainingBalance = maxAmount - totalDonations;
+
+  const columns = [
+    { label: "Recipient", className: "sender-col" },
+    { label: "Amount ($)", className: "amount-col" },
+    { label: "Message (Optional)", className: "message-col" },
+  ];
+
+  const renderRow = (player, idx) => {
+    const playerDonation = currentDonations[player.name]?.amount || 0;
+    const hasError = Number(playerDonation) > 0 && isOverLimit;
+
     return (
-      <div className="donation-interface">
-        <h3 className="box-header">Donate to Others (Gets Tripled!)</h3>
-        <p style={{ padding: "12px", color: "var(--text-light)" }}>
-          No other players have joined yet. Donation options will appear once
-          more players join the game.
-        </p>
+      <div className="received-message-row" key={idx}>
+        <div className="sender-col">
+          <span className="recipient-name">{player.name}</span>
+        </div>
+        <div className="amount-col">
+          <input
+            type="number"
+            min="0"
+            max={maxAmount}
+            value={currentDonations[player.name]?.amount || ""}
+            onChange={(e) => handleDonationChange(player.name, e.target.value)}
+            className={`donation-input amount-input ${hasError ? "error" : ""}`}
+            placeholder="$0"
+          />
+        </div>
+        <div className="message-col">
+          <input
+            type="text"
+            value={currentDonations[player.name]?.message || ""}
+            onChange={(e) =>
+              handleDonationChange(
+                player.name,
+                currentDonations[player.name]?.amount || 0,
+                e.target.value
+              )
+            }
+            className="donation-input message-input"
+            placeholder="Add a message..."
+            maxLength={50}
+          />
+        </div>
       </div>
     );
-  }
-
-  const initialRecipientsToDisplay = recipients.slice(0, maxInitialDisplay);
-  const hasMoreRecipients = recipients.length > maxInitialDisplay;
-
-  // Handler to close modal when clicking background
-  const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
-      setShowRecipientsModal(false);
-    }
   };
 
   return (
     <div className={`donation-interface${isFirstRound ? " first-round" : ""}`}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 12px",
-        }}
-      >
-        <h4
-          className="box-header"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            fontWeight: 700,
-            color: "var(--primary-color)",
-            textTransform: "uppercase",
-          }}
-        >
-          <strong>Donate to Others (Gets Tripled!)</strong>
-        </h4>
-        <button
-          className="button-link"
-          onClick={() => setShowRecipientsModal(true)}
-        >
-          View All ({recipients.length})
-        </button>
-      </div>
+      <ListObject
+        title="Donate to Others (Gets Tripled!)"
+        data={recipients}
+        columns={columns}
+        renderRow={renderRow}
+        maxInitialDisplay={maxInitialDisplay}
+        onViewAll={() => setShowRecipientsModal(true)}
+        emptyMessage="No other players have joined yet. Donation options will appear once more players join the game."
+        containerClassName=""
+      />
 
-      <div className="received-messages-table" style={{ padding: "12px" }}>
-        <div className="received-messages-header">
-          <div className="sender-col">Recipient</div>
-          <div className="amount-col">Amount ($)</div>
-          <div className="message-col">Message (Optional)</div>
-        </div>
-        <div className="received-messages-rows">
-          {initialRecipientsToDisplay.map((player) => (
-            <div className="received-message-row" key={player.name}>
-              <div className="sender-col">
-                <span className="recipient-name">{player.name}</span>
-              </div>
-              <div className="amount-col">
-                <input
-                  type="number"
-                  min="0"
-                  max={maxAmount}
-                  value={currentDonations[player.name]?.amount || ""}
-                  onChange={(e) =>
-                    handleDonationChange(player.name, e.target.value)
-                  }
-                  className="donation-input amount-input"
-                  placeholder="$0"
-                />
-              </div>
-              <div className="message-col">
-                <input
-                  type="text"
-                  value={currentDonations[player.name]?.message || ""}
-                  onChange={(e) =>
-                    handleDonationChange(
-                      player.name,
-                      currentDonations[player.name]?.amount || 0,
-                      e.target.value
-                    )
-                  }
-                  className="donation-input message-input"
-                  placeholder="Add a message..."
-                  maxLength={50}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Recipients Modal */}
-      {showRecipientsModal && (
-        <div className="modal-overlay" onClick={handleOverlayClick}>
-          <div className="modal-content donation-recipients-modal">
-            <button
-              className="modal-close-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowRecipientsModal(false);
-              }}
-              aria-label="Close recipients"
-            >
-              &times;
-            </button>
-            <h2>All Recipients - Donate to Others</h2>
-            <div
-              className="received-messages-table"
-              style={{ padding: "12px" }}
-            >
-              <div className="received-messages-header">
-                <div className="sender-col">Recipient</div>
-                <div className="amount-col">Amount ($)</div>
-                <div className="message-col">Message (Optional)</div>
-              </div>
-              <div className="received-messages-rows">
-                {recipients.map((player) => (
-                  <div className="received-message-row" key={player.name}>
-                    <div className="sender-col">
-                      <span className="recipient-name">{player.name}</span>
-                    </div>
-                    <div className="amount-col">
-                      <input
-                        type="number"
-                        min="0"
-                        max={maxAmount}
-                        value={currentDonations[player.name]?.amount || ""}
-                        onChange={(e) =>
-                          handleDonationChange(player.name, e.target.value)
-                        }
-                        className="donation-input amount-input"
-                        placeholder="$0"
-                      />
-                    </div>
-                    <div className="message-col">
-                      <input
-                        type="text"
-                        value={currentDonations[player.name]?.message || ""}
-                        onChange={(e) =>
-                          handleDonationChange(
-                            player.name,
-                            currentDonations[player.name]?.amount || 0,
-                            e.target.value
-                          )
-                        }
-                        className="donation-input message-input"
-                        placeholder="Add a message..."
-                        maxLength={50}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <ViewAllObject
+        isOpen={showRecipientsModal}
+        onClose={() => setShowRecipientsModal(false)}
+        title="All Recipients - Donate to Others"
+        data={recipients}
+        columns={columns}
+        renderRow={renderRow}
+        modalClassName="donation-recipients-modal"
+      />
     </div>
   );
 }
