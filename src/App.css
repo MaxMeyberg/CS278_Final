@@ -1158,13 +1158,25 @@ button:not(:disabled):hover {
 }
 
 /* === SMALLER SUBMIT BUTTON === */
+.submit-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 16px;
+}
+
 .submit-button {
   font-size: 1rem !important;
   font-weight: 600 !important;
-  padding: 12px 24px !important;
-  height: 40px !important;
-  margin: 8px auto !important;
-  border-radius: 20px !important;
-  max-width: 280px !important;
+  padding: 12px 32px !important;
+  height: 44px !important;
+  margin: 0 !important;
+  border-radius: 22px !important;
+  min-width: 240px !important;
+  max-width: 320px !important;
   width: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
