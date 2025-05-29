@@ -32,7 +32,10 @@ export default function App() {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [splashFading, setSplashFading] = useState(false);
-  const [hasBeenInGame, setHasBeenInGame] = useState(false);
+  const [hasBeenInGame, setHasBeenInGame] = useState(() => {
+    // Check sessionStorage to see if user has been in a game this session
+    return sessionStorage.getItem("money-game-been-in-game") === "true";
+  });
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize from localStorage or default to false
     const savedTheme = localStorage.getItem("money-game-theme");
@@ -122,7 +125,7 @@ export default function App() {
         data.status === "active" ||
         data.status === "completed"
       ) {
-        setHasBeenInGame(true);
+        markAsBeenInGame();
       }
     });
     return unsub;
@@ -133,6 +136,12 @@ export default function App() {
     if (!gameData) return;
     setCurrentDonations({});
   }, [gameData?.day]);
+
+  // Helper function to mark user as having been in a game this session
+  const markAsBeenInGame = () => {
+    setHasBeenInGame(true);
+    sessionStorage.setItem("money-game-been-in-game", "true");
+  };
 
   // Theme toggle
   const handleThemeToggle = () => {
@@ -158,7 +167,7 @@ export default function App() {
         setPlayerKey(pk);
         setJoinedGameId(id);
         setGameState("lobby");
-        setHasBeenInGame(true);
+        markAsBeenInGame();
       } else setError("Failed to create game");
     } catch (e) {
       setError(e.message);
@@ -181,7 +190,7 @@ export default function App() {
         setPlayerKey(res.playerKey);
         setJoinedGameId(id);
         setGameState("lobby");
-        setHasBeenInGame(true);
+        markAsBeenInGame();
       } else setError(res.message || "Failed to join game");
     } catch (e) {
       setError(e.message);
