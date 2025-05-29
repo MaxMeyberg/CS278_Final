@@ -32,6 +32,7 @@ export default function App() {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [splashFading, setSplashFading] = useState(false);
+  const [hasBeenInGame, setHasBeenInGame] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize from localStorage or default to false
     const savedTheme = localStorage.getItem("money-game-theme");
@@ -54,16 +55,16 @@ export default function App() {
     };
   }, []);
 
-  // Show How to Play modal after splash screen finishes
+  // Show How to Play modal after splash screen finishes (only on fresh app start)
   useEffect(() => {
-    if (!showSplash) {
-      // Show How to Play modal after splash screen disappears
+    if (!showSplash && !hasBeenInGame) {
+      // Show How to Play modal after splash screen disappears (only if haven't been in game yet)
       const timer = setTimeout(() => {
         setShowHowToPlay(true);
       }, 200);
       return () => clearTimeout(timer);
     }
-  }, [showSplash]);
+  }, [showSplash, hasBeenInGame]);
 
   // Listen to game data
   useEffect(() => {
@@ -114,6 +115,15 @@ export default function App() {
       if (data.status === "waiting") setGameState("lobby");
       else if (data.status === "active") setGameState("playing");
       else if (data.status === "completed") setGameState("gameover");
+
+      // Mark that user has been in a game once they reach any game state
+      if (
+        data.status === "waiting" ||
+        data.status === "active" ||
+        data.status === "completed"
+      ) {
+        setHasBeenInGame(true);
+      }
     });
     return unsub;
   }, [joinedGameId]);
@@ -148,6 +158,7 @@ export default function App() {
         setPlayerKey(pk);
         setJoinedGameId(id);
         setGameState("lobby");
+        setHasBeenInGame(true);
       } else setError("Failed to create game");
     } catch (e) {
       setError(e.message);
@@ -170,6 +181,7 @@ export default function App() {
         setPlayerKey(res.playerKey);
         setJoinedGameId(id);
         setGameState("lobby");
+        setHasBeenInGame(true);
       } else setError(res.message || "Failed to join game");
     } catch (e) {
       setError(e.message);
