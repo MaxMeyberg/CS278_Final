@@ -101,11 +101,16 @@
   background: var(--background-container);
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-md);
-  padding: 40px 32px;
+  padding: 20px;
   max-width: 520px;
-  width: 100%;
+  width: 90%;
+  max-height: 80vh;
   position: relative;
   border: 1px solid var(--border-color);
+  animation: splashPopIn 0.7s cubic-bezier(0.23, 1.12, 0.62, 1.01);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .modern-close-btn {
@@ -145,42 +150,185 @@
 
 .howto-modal-content h2 {
   margin-top: 0;
-  margin-bottom: 22px;
+  margin-bottom: 16px;
   color: var(--primary-color);
-  font-size: 1.5em;
+  font-size: 1.4em;
   font-weight: 800;
   text-align: center;
+  flex-shrink: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .howto-description {
   margin-top: 10px;
   margin-bottom: 0;
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 8px;
 }
 
-.howto-description p {
+.howto-description::-webkit-scrollbar {
+  width: 6px;
+}
+
+.howto-description::-webkit-scrollbar-track {
+  background: var(--background-alt);
+  border-radius: 3px;
+}
+
+.howto-description::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.howto-description::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+/* === VISUAL HOW TO PLAY STYLES === */
+.howto-intro {
+  text-align: center;
   margin-bottom: 16px;
-  color: var(--text-dark);
-  font-size: 1.08em;
-  line-height: 1.6;
+  padding: 12px;
+  background: var(--background-alt);
+  border-radius: var(--border-radius-md);
+  border-left: 4px solid var(--primary-color);
 }
 
-.howto-description ul {
-  margin: 0 0 18px 18px;
-  padding: 0;
+.howto-intro p {
+  margin: 0;
+  font-size: 1em;
   color: var(--text-dark);
-  font-size: 1.01em;
-  line-height: 1.5;
 }
 
-.howto-description li {
-  margin-bottom: 8px;
+.howto-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.howto-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: var(--background-alt);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  transition: all 0.2s ease;
+}
+
+.howto-step:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.step-icon {
+  font-size: 2em;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--primary-color)
+  );
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.1em;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.step-content p {
+  margin: 0;
+  font-size: 0.95em;
+  line-height: 1.4;
+  color: var(--text-dark);
+}
+
+.howto-goal {
+  margin-top: 12px;
+}
+
+.goal-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--success-bg);
+  border: 2px solid var(--success-border);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.goal-icon {
+  font-size: 2em;
+  flex-shrink: 0;
+}
+
+.goal-text {
+  font-size: 1em;
+  font-weight: 600;
+  color: var(--success-text);
+  line-height: 1.3;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .howto-intro {
+  background: var(--background-alt);
+  border-left-color: var(--primary-color);
+}
+
+[data-theme="dark"] .howto-intro p {
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] .howto-step {
+  background: var(--background-alt);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .howto-step:hover {
+  border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .step-content h3 {
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .step-content p {
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] .goal-box {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+
+[data-theme="dark"] .goal-text {
+  color: var(--success-text);
 }
 
 /* Mobile adjustments */
 @media (max-width: 600px) {
   .howto-modal-content {
     max-width: 98vw;
-    padding: 24px 16px;
+    padding: 16px;
     border-radius: var(--border-radius-sm);
   }
 
@@ -190,6 +338,20 @@
     width: 36px;
     height: 36px;
     font-size: 1.4em;
+  }
+
+  .step-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.6em;
+  }
+
+  .step-content h3 {
+    font-size: 1em;
+  }
+
+  .step-content p {
+    font-size: 0.9em;
   }
 }
 

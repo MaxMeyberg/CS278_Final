@@ -77,6 +77,10 @@ function PlayingScreen({
 
   // === WAITING VIEW (Player has submitted donations) ===
   if (playerObj.ready) {
+    const allPlayersReady = Object.values(gameData.players).every(
+      (p) => p.ready
+    );
+
     return (
       <div className="playing-container waiting-view">
         <h1>Day {day} - Waiting for Others</h1>
@@ -85,18 +89,19 @@ function PlayingScreen({
           {/* Player Readiness Status */}
           <PlayerStatusList players={gameData.players} maxInitialDisplay={2} />
           {/* Process Donations Button (Host Only) */}
-          {gameData.host === playerName &&
-            Object.values(gameData.players).every((p) => p.ready) && (
-              <button
-                className="button-primary process-button button-full-width"
-                onClick={handleProcessDonations}
-                disabled={loading}
-              >
-                {loading
-                  ? "Processing..."
-                  : "Everyone is ready! Process Donations"}
-              </button>
-            )}
+          {gameData.host === playerName && (
+            <button
+              className="button-primary process-button button-full-width"
+              onClick={handleProcessDonations}
+              disabled={loading || !allPlayersReady}
+            >
+              {loading
+                ? "Processing..."
+                : allPlayersReady
+                ? "Everyone is ready! Process Donations"
+                : "Waiting for other players..."}
+            </button>
+          )}
         </div>
       </div>
     );
@@ -162,12 +167,11 @@ function PlayingScreen({
       {error && <div className="error-message">{error}</div>}
       {/* Player Info Box */}
       <div className="player-info">
-        <h2 className="box-header">{playerName}</h2>
+        <h2 className="transaction-list-header">{playerName}</h2>
         <div className="player-stats">
           <p>
             Your Balance: <span className="value">${playerObj.money}</span>
-          </p>
-          <p>
+            {" | "}
             Remaining After Donations:{" "}
             <span
               className={`value ${
@@ -183,7 +187,7 @@ function PlayingScreen({
       {day > 1 && (
         <ReceivedMessagesList
           messages={allReceivedDonations}
-          maxInitialDisplay={1}
+          maxInitialDisplay={allReceivedDonations.length}
         />
       )}
       {/* Donation Interface */}
@@ -191,7 +195,7 @@ function PlayingScreen({
         recipients={otherPlayers}
         currentDonations={currentDonations}
         handleDonationChange={handleDonationChange}
-        maxInitialDisplay={1}
+        maxInitialDisplay={10}
         maxAmount={playerObj.money}
         isFirstRound={day === 1}
       />

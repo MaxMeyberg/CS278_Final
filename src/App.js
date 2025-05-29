@@ -54,6 +54,17 @@ export default function App() {
     };
   }, []);
 
+  // Show How to Play modal after splash screen finishes
+  useEffect(() => {
+    if (!showSplash) {
+      // Show How to Play modal after splash screen disappears
+      const timer = setTimeout(() => {
+        setShowHowToPlay(true);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [showSplash]);
+
   // Listen to game data
   useEffect(() => {
     if (!joinedGameId) return;

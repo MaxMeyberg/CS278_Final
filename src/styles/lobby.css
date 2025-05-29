@@ -5,8 +5,51 @@
   list-style: none;
   display: grid;
   gap: 15px;
-  /* max-height: 45vh; REMOVED - now using truncation */
-  /* overflow-y: auto; REMOVED - now using truncation */
+  max-height: calc(60vh - 200px); /* Dynamic height based on viewport */
+  overflow-y: auto; /* Allow scrolling for many players */
+  flex: 1; /* Take available space */
+}
+
+/* Responsive adjustments for lobby */
+@media (max-height: 700px) {
+  .players-list {
+    max-height: calc(50vh - 160px) !important;
+    gap: 12px !important;
+  }
+
+  .player-item {
+    padding: 12px !important;
+  }
+
+  .waiting-screen {
+    margin-top: 3vh !important;
+  }
+}
+
+@media (max-height: 600px) {
+  .players-list {
+    max-height: calc(45vh - 140px) !important;
+    gap: 10px !important;
+  }
+
+  .player-item {
+    padding: 10px !important;
+  }
+
+  .waiting-screen {
+    margin-top: 2vh !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .players-list {
+    margin: 15px 0 !important;
+  }
+
+  .waiting-screen {
+    width: 95% !important;
+    margin-top: 2vh !important;
+  }
 }
 
 .player-item {
@@ -160,27 +203,39 @@
 /* === WAITING VIEW STYLES === */
 .waiting-screen {
   background: var(--background-container);
-  padding: 30px 40px;
+  padding: 30px 50px 15px 50px; /* Reduced padding for better space utilization */
   border-radius: var(--border-radius-md);
   margin: 0 auto;
   text-align: center;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-md);
-  width: 100%;
+  width: 90%;
+  min-height: 40vh; /* Smaller minimum height */
+  max-height: 85vh; /* Larger maximum height */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Position closer to top instead of center */
+  overflow-y: auto; /* Allow scrolling if needed */
+  margin-top: 5vh; /* Small top margin to keep it near the top */
 }
 
 .player-status-section {
-  margin-top: 25px;
-  padding-top: 20px;
+  margin-top: 15px; /* Reduced margin */
+  padding-top: 12px; /* Reduced padding */
   border-top: 1px solid var(--border-color);
+  flex: 1; /* Take available space */
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Allow shrinking */
 }
 
 .player-status-section h4 {
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 12px; /* Reduced margin */
   color: var(--text-dark);
   font-size: 1em;
   font-weight: 500;
+  flex-shrink: 0; /* Don't shrink the header */
 }
 
 .player-status-list {
@@ -188,6 +243,10 @@
   flex-direction: column;
   gap: 12px;
   margin: 0;
+  max-height: calc(65vh - 80px); /* Much larger - use ~65% of viewport */
+  min-height: 200px; /* Larger minimum visible area */
+  overflow-y: auto;
+  flex: 1; /* Take remaining space */
 }
 
 .player-status {
