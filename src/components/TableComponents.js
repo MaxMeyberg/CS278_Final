@@ -111,7 +111,7 @@ export const ListObject = ({
   if (!data || data.length === 0) {
     return (
       <div className={containerClassName}>
-        <h4 className="box-header">{title}</h4>
+        <h4 className="transaction-list-header">{title}</h4>
         <p className="received-message-empty">
           {emptyMessage || "No items to display."}
         </p>
@@ -131,32 +131,20 @@ export const ListObject = ({
           ...headerStyle,
         }}
       >
-        <h4
-          className="box-header"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            fontWeight: 700,
-            color: "var(--primary-color)",
-            textTransform: "uppercase",
-            fontSize: "1.15em",
-          }}
-        >
-          <strong>{title}</strong>
-        </h4>
-        {showViewAll && (
+        <h4 className="transaction-list-header">{title}</h4>
+        {/* Temporarily commented out View All button */}
+        {/* {showViewAll && (
           <button className="button-link" onClick={onViewAll}>
             View All ({data.length})
           </button>
-        )}
+        )} */}
       </div>
 
       <DataTable
         columns={columns}
         data={initialDataToDisplay}
         renderRow={renderRow}
-        style={{ padding: "12px" }}
+        style={{ padding: "0" }}
       />
     </div>
   );

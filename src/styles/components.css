@@ -11,21 +11,24 @@
   max-width: 900px;
   min-width: 340px;
   width: 80vw;
-  height: 85vh; /* Fixed height instead of max-height */
-  margin: 0 auto 2vh auto; /* Add margin-bottom for spacing */
+  min-height: 60vh; /* Minimum height instead of fixed */
+  max-height: 90vh; /* Maximum height that adapts to viewport */
+  margin: 0 auto 2vh auto;
   padding: 40px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Start from top */
+  justify-content: flex-start;
   align-items: center;
   transition: box-shadow 0.3s, border-color 0.3s, background 0.3s;
-  overflow: hidden !important; /* Prevent scrolling in main container */
+  overflow-y: auto; /* Allow scrolling if content exceeds container */
+  overflow-x: hidden;
 }
 
 .playing-container {
-  gap: 16px; /* Consistent spacing between elements for playing screen */
-  padding: 24px; /* Smaller padding for playing screen */
-  overflow: hidden !important; /* Remove scrolling from main container */
+  gap: 6px; /* Minimal spacing for better fit */
+  padding: 16px; /* Reduced padding for playing screen */
+  overflow-y: auto; /* Allow vertical scrolling if needed */
+  overflow-x: hidden;
 }
 
 /* === MODAL STYLES === */
@@ -347,11 +350,12 @@ button:not(:disabled):hover {
   background-color: var(--danger-bg);
   color: var(--danger-text);
   border: 1px solid var(--danger-border);
-  padding: 15px 20px;
+  padding: 8px 16px; /* Compact padding */
   border-radius: var(--border-radius-sm);
-  margin: 20px 0;
+  margin: 8px 0; /* Reduced margin */
   text-align: center;
-  font-size: 0.95rem;
+  font-size: 0.9rem; /* Slightly smaller */
+  flex-shrink: 0; /* Don't shrink error messages */
 }
 
 .waiting-message {
@@ -474,4 +478,117 @@ button:not(:disabled):hover {
 [data-theme="dark"] .setup-input::placeholder {
   color: #bfc2cf !important;
   opacity: 1;
+}
+
+/* Force both sections to be responsive but with different sizing strategies */
+.donation-interface {
+  width: 100% !important;
+  background: var(--background-container) !important;
+  border-radius: var(--border-radius-md) !important;
+  border: 1.5px solid var(--border-color) !important;
+  margin-bottom: 8px !important;
+  box-shadow: var(--shadow-sm) !important;
+  padding: 14px 16px 12px 16px !important;
+  max-height: calc(
+    65vh - 20px
+  ) !important; /* Large but leave room for received messages */
+  min-height: 220px !important; /* Always large minimum */
+  overflow: hidden !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important; /* Equal flex basis but can grow/shrink */
+  align-self: stretch !important; /* Ensure it takes full width of parent */
+}
+
+.received-messages {
+  width: 100% !important;
+  background: var(--background-container) !important;
+  border-radius: var(--border-radius-md) !important;
+  border: 1.5px solid var(--border-color) !important;
+  margin-bottom: 8px !important;
+  box-shadow: var(--shadow-sm) !important;
+  padding: 14px 16px 12px 16px !important;
+  max-height: calc(
+    65vh - 20px
+  ) !important; /* Can be as large as donations when needed */
+  min-height: 80px !important; /* Small minimum - shrinks when little content */
+  overflow: hidden !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important; /* Equal flex basis - shares space with donations */
+  align-self: stretch !important; /* Ensure it takes full width of parent */
+}
+
+/* Make both sections absolutely identical */
+.transaction-list-header {
+  margin-bottom: 6px !important;
+  font-size: 0.95em !important;
+  font-weight: 700 !important;
+  color: var(--primary-color) !important;
+  text-align: left !important;
+  letter-spacing: 0.3px !important;
+  text-transform: uppercase !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 20 !important;
+  background: var(--background-container) !important;
+  padding: 0 0 4px 0 !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  flex-shrink: 0 !important;
+}
+
+.received-messages-header,
+.donation-interface .received-messages-header {
+  padding: 8px 12px !important;
+  margin-bottom: 8px !important;
+  font-size: 0.85em !important;
+  font-weight: 600 !important;
+  color: var(--text-light) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  background: linear-gradient(
+    135deg,
+    var(--background-alt),
+    var(--background-container)
+  ) !important;
+  border-radius: 4px 4px 0 0 !important;
+  position: relative !important;
+  display: flex !important;
+  flex-shrink: 0 !important;
+}
+
+.received-messages-table,
+.donation-interface .received-messages-table {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+}
+
+.received-message-row,
+.donation-interface .received-message-row {
+  padding: 12px 14px !important;
+  background: var(--background-alt) !important;
+  border-radius: 6px !important;
+  border: 1px solid transparent !important;
+  display: flex !important;
+  align-items: center !important;
+  font-size: 1em !important;
+  min-height: 44px !important;
+  color: var(--text-dark) !important;
+  transition: all 0.2s ease !important;
+  margin-bottom: 6px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
 }

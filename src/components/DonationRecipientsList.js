@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ListObject, ViewAllObject } from "./TableComponents";
+import { ViewAllObject } from "./TableComponents";
 
 function DonationRecipientsList({
   recipients = [],
@@ -150,16 +150,28 @@ function DonationRecipientsList({
 
   return (
     <div className={`donation-interface${isFirstRound ? " first-round" : ""}`}>
-      <ListObject
-        title="Donate to Others (Gets Tripled!)"
-        data={recipients}
-        columns={columns}
-        renderRow={renderRow}
-        maxInitialDisplay={maxInitialDisplay}
-        onViewAll={() => setShowRecipientsModal(true)}
-        emptyMessage="No other players have joined yet. Donation options will appear once more players join the game."
-        containerClassName=""
-      />
+      {/* Direct table rendering - always show all recipients */}
+      <h4 className="transaction-list-header">Donate to Others</h4>
+
+      {!recipients || recipients.length === 0 ? (
+        <p className="received-message-empty">
+          No other players have joined yet. Donation options will appear once
+          more players join the game.
+        </p>
+      ) : (
+        <div className="received-messages-table">
+          <div className="received-messages-header">
+            {columns.map((col, idx) => (
+              <div key={idx} className={col.className}>
+                {col.label}
+              </div>
+            ))}
+          </div>
+          <div className="received-messages-rows">
+            {recipients.map((recipient, idx) => renderRow(recipient, idx))}
+          </div>
+        </div>
+      )}
 
       <ViewAllObject
         isOpen={showRecipientsModal}

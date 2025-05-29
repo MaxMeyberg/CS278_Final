@@ -39,45 +39,70 @@ const HowToPlayModal = ({ open, onClose }) => {
             &#10005;
           </span>
         </button>
-        <h2>How to Play</h2>
+        <h2>💸 How to Play</h2>
         <div className="howto-description">
-          <p>
-            <strong>Welcome to the Money Game!</strong> This is a strategic
-            multiplayer game that explores cooperation, trust, and social
-            dynamics. Each player receives 100 points per round for three
-            rounds, but reaching the 1000-point goal requires teamwork and smart
-            decisions.
-          </p>
-          <ul>
-            <li>
-              Donate points to other players each round. Any donations you
-              receive are <strong>tripled</strong>!
-            </li>
-            <li>
-              No one knows how much money the others have—build trust and
-              strategize to win.
-            </li>
-            <li>
-              If nobody collaborates, everyone loses. Work together, but be
-              careful who you trust.
-            </li>
-            <li>
-              Send a short message with each donation to communicate or bluff.
-              Inappropriate content is filtered.
-            </li>
-            <li>
-              After three rounds, see who reached the goal and how your choices
-              shaped the outcome.
-            </li>
-          </ul>
-          <p className="howto-inspiration">
-            <em>
-              Every round is a chance to build alliances, outwit your rivals,
-              and test your instincts. Can you read the room, earn trust, and
-              help everyone win—or will suspicion and secrecy get in the way?
-              The outcome is in your hands!
-            </em>
-          </p>
+          <div className="howto-intro">
+            <p>
+              <strong>Welcome to the Money Game!</strong> A strategic
+              multiplayer game about cooperation, trust, and smart decisions.
+            </p>
+          </div>
+
+          <div className="howto-steps">
+            <div className="howto-step">
+              <div className="step-icon">💰</div>
+              <div className="step-content">
+                <h3>Get Money Each Round</h3>
+                <p>
+                  Everyone starts with <strong>100 points</strong> per round for
+                  3 rounds. Goal: reach <strong>1000 points</strong>!
+                </p>
+              </div>
+            </div>
+
+            <div className="howto-step">
+              <div className="step-icon">🎁</div>
+              <div className="step-content">
+                <h3>Donate & Get Tripled</h3>
+                <p>
+                  Donate to other players. Any donations you receive are{" "}
+                  <strong>tripled</strong>! 💫
+                </p>
+              </div>
+            </div>
+
+            <div className="howto-step">
+              <div className="step-icon">🤝</div>
+              <div className="step-content">
+                <h3>Work Together</h3>
+                <p>
+                  No one knows others' money. Build trust and cooperate—or
+                  everyone loses!
+                </p>
+              </div>
+            </div>
+
+            <div className="howto-step">
+              <div className="step-icon">💬</div>
+              <div className="step-content">
+                <h3>Send Messages</h3>
+                <p>
+                  Include a message with donations to communicate, strategize,
+                  or bluff.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="howto-goal">
+            <div className="goal-box">
+              <span className="goal-icon">🏆</span>
+              <div className="goal-text">
+                <strong>Win Together:</strong> Help everyone reach 1000 points
+                through smart cooperation and trust!
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

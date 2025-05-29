@@ -34,18 +34,10 @@ function PlayerStatusList({ players, maxInitialDisplay = 2 }) {
     <div className="player-status-section">
       <div className="players-list-header">
         <h4>Player Status:</h4>
-        {hasMorePlayers && (
-          <button
-            className="button-link"
-            onClick={() => setShowStatusModal(true)}
-          >
-            View All ({allPlayers.length})
-          </button>
-        )}
       </div>
 
       <div className="player-status-list">
-        {initialPlayersToDisplay.map((player) => (
+        {allPlayers.map((player) => (
           <PlayerStatusItem key={player.name} player={player} />
         ))}
       </div>

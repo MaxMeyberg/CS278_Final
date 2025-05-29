@@ -33,6 +33,7 @@
 [data-theme="dark"] {
   --background-body: #181a20;
   --background-container: #23262f;
+  --background-alt: #2a2d36;
   --border-color: #3a3d4d;
   --primary-color: #ff6b6b;
   --primary-hover: #ff5252;
@@ -42,6 +43,9 @@
   --text-dark: #f5f6fa;
   --text-light: #bfc2cf;
   --white: #23262f;
+  --success-bg: #1e3a2e;
+  --success-text: #4caf50;
+  --success-border: #2e7d32;
   --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.45);
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
 }

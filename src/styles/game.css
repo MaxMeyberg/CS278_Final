@@ -1,19 +1,47 @@
 /* === GAME SCREEN === */
 .game-header {
   width: 100%;
-  margin-bottom: 12px; /* Reduced from 16px */
+  margin-bottom: 6px; /* Further reduced margin */
   text-align: center;
+  flex-shrink: 0; /* Don't shrink the header */
 }
 
 .game-header h1 {
-  font-size: 1.4em;
+  font-size: 1.1em; /* Smaller for more space */
   margin: 0;
-  padding: 8px; /* Reduced from 12px */
+  padding: 4px; /* Minimal padding */
   color: var(--primary-color);
 }
 
-.player-info,
-.received-messages,
+.player-info {
+  width: 100%;
+  background: var(--background-container);
+  border-radius: var(--border-radius-md);
+  border: 1.5px solid var(--border-color);
+  margin-bottom: 6px; /* Reduced margin */
+  box-shadow: var(--shadow-sm);
+  padding: 10px 14px; /* Reduced padding */
+  flex-shrink: 0; /* Don't shrink the player info */
+  align-self: stretch; /* Ensure it takes full width of parent */
+}
+
+.received-messages {
+  width: 100%;
+  background: var(--background-container);
+  border-radius: var(--border-radius-md);
+  border: 1.5px solid var(--border-color);
+  margin-bottom: 8px;
+  box-shadow: var(--shadow-sm);
+  padding: 14px 16px 12px 16px;
+  max-height: 220px;
+  min-height: 120px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
 .donation-interface {
   width: 100%;
   background: var(--background-container);
@@ -21,30 +49,82 @@
   border: 1.5px solid var(--border-color);
   margin-bottom: 8px;
   box-shadow: var(--shadow-sm);
-  padding: 8px;
+  padding: 14px 16px 12px 16px;
+  max-height: 220px;
+  min-height: 120px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.donation-interface:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+}
+
+.donation-interface::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.donation-interface:hover::before {
+  opacity: 1;
 }
 
 /* Received Messages Table Structure - Clean and Simple */
-.received-messages-table,
+.received-messages-table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 0 !important;
+  padding: 0;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .donation-interface .received-messages-table {
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: 8px;
+  margin-top: 0;
   padding: 0;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .received-messages-header,
 .donation-interface .received-messages-header {
   display: flex;
-  padding: 6px 8px;
-  margin-bottom: 2px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
   font-size: 0.85em;
   font-weight: 600;
   color: var(--text-light);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(
+    135deg,
+    var(--background-alt),
+    var(--background-container)
+  );
+  border-radius: 4px 4px 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .received-messages-header .sender-col,
@@ -82,26 +162,50 @@
   min-width: 150px;
 }
 
+.received-messages-header .donate-col,
+.received-message-row .donate-col,
+.donation-interface .received-messages-header .donate-col,
+.donation-interface .received-message-row .donate-col {
+  flex: 0 0 140px;
+  text-align: center;
+  padding: 0;
+  min-width: 140px;
+  max-width: 140px;
+}
+
 .received-messages-rows,
 .donation-interface .received-messages-rows {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  max-height: 40px;
-  overflow-y: auto;
 }
 
 .received-message-row,
 .donation-interface .received-message-row {
-  padding: 6px 8px;
+  padding: 12px 14px;
   background: var(--background-alt);
-  border-radius: 4px;
-  border: none;
+  border-radius: 6px;
+  border: 1px solid transparent;
   display: flex;
   align-items: center;
-  font-size: 1.1em;
-  min-height: 28px;
+  font-size: 1em;
+  min-height: 44px;
   color: var(--text-dark);
+  transition: all 0.2s ease;
+  margin-bottom: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.donation-interface .received-message-row:hover {
+  background: var(--background-container);
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.1);
+  transform: translateX(4px);
+}
+
+.donation-interface .received-message-row:last-child {
+  margin-bottom: 0;
 }
 
 .received-message-row .sender-col,
@@ -232,41 +336,68 @@
   border-left: 2px solid var(--accent-color);
 }
 
-/* Simple input fields in donation interface */
+/* Enhanced input fields in donation interface */
 .donation-interface .donation-input {
   width: 100%;
-  padding: 0;
-  border: 1px solid transparent;
-  border-radius: 2px;
-  font-size: 1.1em;
-  background: transparent;
+  padding: 6px 8px;
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1em;
+  background: var(--background-container);
   color: var(--text-dark);
   font-family: inherit;
   font-weight: inherit;
   font-style: inherit;
   text-align: left;
   height: 32px;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.donation-interface .donation-input:hover {
+  border-color: var(--primary-color);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1),
+    0 0 0 3px rgba(231, 76, 60, 0.1);
 }
 
 .donation-interface .donation-input:focus {
-  outline: 1px solid var(--primary-color);
-  outline-offset: 1px;
+  outline: none;
   border-color: var(--primary-color);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1),
+    0 0 0 3px rgba(231, 76, 60, 0.2);
+  transform: scale(1.02);
 }
 
 .donation-interface .amount-input {
-  text-align: left;
+  text-align: center;
   width: 100%;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--success-text);
-  font-size: 1.1em;
+  font-size: 1.2em;
+  background: linear-gradient(
+    135deg,
+    var(--background-container),
+    var(--background-alt)
+  );
+}
+
+.donation-interface .amount-input:focus {
+  color: var(--primary-color);
+  background: var(--background-container);
 }
 
 .donation-interface .message-input {
+  color: var(--text-dark);
+  font-size: 1em;
+  font-style: normal;
+  text-align: left;
+  background: var(--background-container);
+}
+
+.donation-interface .message-input::placeholder {
   color: var(--text-light);
   font-style: italic;
-  font-size: 1.05em;
-  text-align: left;
+  opacity: 0.7;
 }
 
 .donation-interface .amount-input.readonly-style {
@@ -376,18 +507,53 @@
 }
 
 .donation-interface > .box-header {
-  font-size: 1.1em;
+  font-size: 0.95em !important;
   font-weight: 700;
   color: var(--primary-color);
-  margin: 0 0 12px 0;
+  margin: 0 0 8px 0;
   text-align: left;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--background-container);
+  padding: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.donation-interface > .box-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 36px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  border-radius: 1px;
 }
 
 .donation-interface .received-message-row .sender-col {
-  font-size: 1em;
-  font-weight: bold;
   color: var(--primary-color);
+  font-weight: 700;
+  font-size: 1.1em;
+}
+
+.donate-indicator {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--accent-color);
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--primary-color)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Unified Simple Modal Styling - Compact with bigger text, headers on one line, taller scroll area */
@@ -680,4 +846,320 @@
 
 [data-theme="dark"] .remaining-balance.negative {
   color: #ff6b6b !important;
+}
+
+/* Enhanced scrollbar styling for donation interface */
+.donation-interface::-webkit-scrollbar {
+  width: 8px;
+}
+
+.donation-interface::-webkit-scrollbar-track {
+  background: var(--background-alt);
+  border-radius: 10px;
+  margin: 8px 0;
+}
+
+.donation-interface::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--accent-color)
+  );
+  border-radius: 10px;
+  border: 2px solid var(--background-container);
+  transition: all 0.2s ease;
+}
+
+.donation-interface::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    135deg,
+    var(--primary-hover),
+    var(--primary-color)
+  );
+  transform: scaleY(1.1);
+}
+
+.donation-header-with-tripled {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.donation-header-with-tripled .box-header {
+  margin: 0;
+  padding-bottom: 4px;
+}
+
+.tripled-indicator {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--accent-color);
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--primary-color)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.donation-table-header {
+  background: var(--background-alt);
+  padding: 4px 12px;
+  border-radius: 4px 4px 0 0;
+  border-bottom: 1px solid var(--border-color);
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 15;
+}
+
+.tripled-text {
+  font-size: 0.75em;
+  font-weight: 600;
+  color: var(--accent-color);
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--primary-color)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.received-messages > .box-header {
+  font-size: 0.95em !important;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0 0 8px 0;
+  text-align: left;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--background-container);
+  padding: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.received-messages > .box-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 36px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  border-radius: 1px;
+}
+
+/* Shared styling for Donation and Received Messages Headers */
+.transaction-list-header {
+  font-size: 0.95em !important;
+  font-weight: 700 !important;
+  color: var(--primary-color) !important;
+  margin: 0 0 8px 0;
+  text-align: left;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--background-container);
+  padding: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.transaction-list-header::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 36px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  border-radius: 1px;
+}
+
+/* Submit box - dynamically centered in remaining space */
+.submit-box {
+  width: 100%;
+  margin-top: auto; /* Push to bottom */
+  flex-shrink: 0; /* Don't allow shrinking */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1; /* Take up remaining vertical space */
+  min-height: 0; /* Allow it to shrink if needed */
+}
+
+.submit-box .submit-button {
+  width: auto; /* Let button size itself */
+  min-width: 300px; /* Minimum width for good proportions */
+  max-width: 400px; /* Maximum width to prevent it being too wide */
+  margin: 0; /* Remove auto margins */
+  height: 50px; /* Slightly larger for better presence */
+  font-size: 1.15em; /* Slightly larger font */
+  padding: 0 32px; /* Horizontal padding for button content */
+}
+
+/* Process button container for waiting screen */
+.process-button {
+  margin-top: 15px !important; /* Minimal top margin */
+  margin-bottom: 0 !important;
+  flex-shrink: 0 !important; /* Don't shrink */
+}
+
+/* Responsive design for smaller screens - updated for content-based sizing */
+@media (max-height: 700px) {
+  .donation-interface {
+    max-height: calc(
+      55vh - 15px
+    ) !important; /* Large but room for received messages */
+    min-height: 180px !important;
+  }
+
+  .received-messages {
+    max-height: calc(
+      55vh - 15px
+    ) !important; /* Can match donations when needed */
+    min-height: 60px !important;
+  }
+
+  .player-status-list {
+    max-height: calc(
+      55vh - 60px
+    ) !important; /* Large but adjusted for smaller screens */
+    min-height: 160px !important;
+  }
+
+  .waiting-screen {
+    padding: 20px 35px 10px 35px !important;
+    margin-top: 3vh !important;
+  }
+
+  .playing-container {
+    padding: 12px !important;
+    gap: 6px !important;
+  }
+
+  .submit-box .submit-button {
+    height: 46px !important;
+    font-size: 1.1em !important;
+    min-width: 280px !important;
+  }
+}
+
+@media (max-height: 600px) {
+  .donation-interface {
+    max-height: calc(50vh - 10px) !important; /* Still large on small screens */
+    min-height: 160px !important;
+  }
+
+  .received-messages {
+    max-height: calc(
+      50vh - 10px
+    ) !important; /* Can match donations when needed */
+    min-height: 50px !important;
+  }
+
+  .player-status-list {
+    max-height: calc(
+      45vh - 50px
+    ) !important; /* Still substantial on very small screens */
+    min-height: 120px !important;
+  }
+
+  .waiting-screen {
+    padding: 15px 25px 8px 25px !important;
+    min-height: 30vh !important;
+    margin-top: 2vh !important;
+  }
+
+  .playing-container {
+    padding: 8px !important;
+    gap: 4px !important;
+  }
+
+  .submit-box .submit-button {
+    height: 42px !important;
+    font-size: 1.05em !important;
+    min-width: 260px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .waiting-screen {
+    padding: 12px 15px 8px 15px !important;
+    width: 95% !important;
+    margin-top: 2vh !important;
+  }
+
+  .playing-container {
+    padding: 12px !important;
+  }
+
+  .player-info {
+    padding: 8px 12px !important;
+  }
+
+  .submit-box .submit-button {
+    min-width: 240px !important;
+    max-width: 320px !important;
+  }
+}
+
+/* Playing container specific layout - optimized for large tables */
+.playing-container.donating-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Use full container height */
+  gap: 6px; /* Minimal gaps to maximize content space */
+  padding: 16px 20px 8px 20px; /* Asymmetric padding - less at bottom */
+  align-items: center; /* Center all children horizontally */
+}
+
+.playing-container.waiting-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Use full container height */
+  align-items: center;
+  justify-content: flex-start; /* Start from top instead of center */
+  padding: 15px 20px; /* Reduced padding */
+}
+
+.playing-container.waiting-view h1 {
+  margin-bottom: 10px; /* Reduced margin */
+  flex-shrink: 0;
+  margin-top: 0; /* No top margin */
+}
+
+/* Ensure content sections can grow to fill available space */
+.received-messages,
+.donation-interface {
+  flex-grow: 1; /* Allow growth to fill available space */
+}
+
+/* Make error messages more compact too */
+.error-message {
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+  border: 1px solid var(--danger-border);
+  padding: 8px 16px; /* Reduced padding */
+  border-radius: var(--border-radius-sm);
+  margin: 8px 0; /* Reduced margin */
+  text-align: center;
+  font-size: 0.9rem; /* Slightly smaller */
+  flex-shrink: 0;
 }

@@ -32,6 +32,10 @@ export default function App() {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [splashFading, setSplashFading] = useState(false);
+  const [hasBeenInGame, setHasBeenInGame] = useState(() => {
+    // Check sessionStorage to see if user has been in a game this session
+    return sessionStorage.getItem("money-game-been-in-game") === "true";
+  });
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize from localStorage or default to false
     const savedTheme = localStorage.getItem("money-game-theme");
@@ -53,6 +57,17 @@ export default function App() {
       clearTimeout(b);
     };
   }, []);
+
+  // Show How to Play modal after splash screen finishes (only on fresh app start)
+  useEffect(() => {
+    if (!showSplash && !hasBeenInGame) {
+      // Show How to Play modal after splash screen disappears (only if haven't been in game yet)
+      const timer = setTimeout(() => {
+        setShowHowToPlay(true);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [showSplash, hasBeenInGame]);
 
   // Listen to game data
   useEffect(() => {
@@ -103,6 +118,15 @@ export default function App() {
       if (data.status === "waiting") setGameState("lobby");
       else if (data.status === "active") setGameState("playing");
       else if (data.status === "completed") setGameState("gameover");
+
+      // Mark that user has been in a game once they reach any game state
+      if (
+        data.status === "waiting" ||
+        data.status === "active" ||
+        data.status === "completed"
+      ) {
+        markAsBeenInGame();
+      }
     });
     return unsub;
   }, [joinedGameId]);
@@ -112,6 +136,12 @@ export default function App() {
     if (!gameData) return;
     setCurrentDonations({});
   }, [gameData?.day]);
+
+  // Helper function to mark user as having been in a game this session
+  const markAsBeenInGame = () => {
+    setHasBeenInGame(true);
+    sessionStorage.setItem("money-game-been-in-game", "true");
+  };
 
   // Theme toggle
   const handleThemeToggle = () => {
@@ -137,6 +167,7 @@ export default function App() {
         setPlayerKey(pk);
         setJoinedGameId(id);
         setGameState("lobby");
+        markAsBeenInGame();
       } else setError("Failed to create game");
     } catch (e) {
       setError(e.message);
@@ -159,6 +190,7 @@ export default function App() {
         setPlayerKey(res.playerKey);
         setJoinedGameId(id);
         setGameState("lobby");
+        markAsBeenInGame();
       } else setError(res.message || "Failed to join game");
     } catch (e) {
       setError(e.message);
